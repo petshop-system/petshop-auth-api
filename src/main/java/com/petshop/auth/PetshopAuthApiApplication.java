@@ -21,12 +21,6 @@ public class PetshopAuthApiApplication implements CommandLineRunner {
 	@Value(value = "${spring.config.activate.on-profile}")
 	private String activeProfile;
 
-	@Value(value = "${redis.host}")
-	private String redisHost;
-
-	@Value(value = "${redis.port}")
-	private int redisPort;
-
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(PetshopAuthApiApplication.class);
 		app.run();
@@ -39,27 +33,11 @@ public class PetshopAuthApiApplication implements CommandLineRunner {
 		return objectMapper.registerModule(javaTimeModule);
 	}
 
-	@Bean
-	JedisConnectionFactory jedisConnectionFactory() {
-		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHost, redisPort);
-		JedisConnectionFactory jedisConFactory = new JedisConnectionFactory(config);
-		return jedisConFactory;
-	}
-
-	@Bean
-	public RedisTemplate<String, Object> redisTemplate() {
-		RedisTemplate<String, Object> template = new RedisTemplate<>();
-		template.setConnectionFactory(jedisConnectionFactory());
-		return template;
-	}
-
 	@Override
 	public void run(String... args) {
 
 		logger.info("#############################################################");
 		logger.info("active profile: {}", activeProfile);
-		logger.info("redisHost: {}", redisHost);
-		logger.info("redisPort: {}", redisPort);
 		logger.info("#############################################################");
 
 	}
