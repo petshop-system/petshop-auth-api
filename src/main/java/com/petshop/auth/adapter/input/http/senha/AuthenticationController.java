@@ -45,7 +45,7 @@ public class AuthenticationController {
     public ResponseEntity<ResponseHTTP> validate (@RequestParam(value = "login") String login,
                                     @RequestParam(value = "password") String password) throws Exception {
 
-        AuthenticationDomain authenticationDomain = authenticationUsercase.getByLoginAndPassword(login, password);
+        AuthenticationDomain authenticationDomain = authenticationUsercase.login(login, password);
         if (ObjectUtils.isEmpty(authenticationDomain)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }

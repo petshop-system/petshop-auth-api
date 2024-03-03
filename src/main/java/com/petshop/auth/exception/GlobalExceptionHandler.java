@@ -18,16 +18,21 @@ import java.util.Map;
 //@Tag(name = "GlobalExceptionHandler", description = "Global Exception Handler: management APIs")
 public class GlobalExceptionHandler {
 
+    private HttpHeaders defaultHttpHeaders () {
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
+        return headers;
+    }
+
     /** Provides handling for exceptions throughout this service. */
     @ExceptionHandler({NotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public final ResponseEntity<ApiError> handleNotFoundException(Exception ex, WebRequest request) {
 
         NotFoundException val = (NotFoundException) ex;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        return this.handleExceptionInternal(ex, new ApiError(Map.of("message", val.getMessage())), headers, HttpStatus.NOT_FOUND, request);
+        return this.handleExceptionInternal(ex, new ApiError(Map.of("message", val.getMessage())),
+                this.defaultHttpHeaders(), HttpStatus.NOT_FOUND, request);
     }
 
     @ExceptionHandler({InternalServerErrorException.class})
@@ -35,21 +40,30 @@ public class GlobalExceptionHandler {
     public final ResponseEntity<ApiError> handleInternalServerErrorException(Exception ex, WebRequest request) {
 
         InternalServerErrorException isre = (InternalServerErrorException) ex;
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        return this.handleExceptionInternal(ex, new ApiError(Map.of("message", isre.getMessage())), headers, HttpStatus.INTERNAL_SERVER_ERROR, request);
+        return this.handleExceptionInternal(ex, new ApiError(Map.of("message",
+                isre.getMessage())), this.defaultHttpHeaders(),
+                HttpStatus.INTERNAL_SERVER_ERROR, request);
+    }
+
+    @ExceptionHandler({UnauthorizedException.class})
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public final ResponseEntity<ApiError> handleUnauthorizedException(Exception ex, WebRequest request) {
+
+        UnauthorizedException isre = (UnauthorizedException) ex;
+
+        return this.handleExceptionInternal(ex, new ApiError(Map.of("message",
+                isre.getMessage())), this.defaultHttpHeaders(),
+                HttpStatus.UNAUTHORIZED, request);
     }
 
     @ExceptionHandler({ValidationException.class})
     public final ResponseEntity<ApiError> handleValidationException(Exception ex, WebRequest request) {
 
         ValidationException val = (ValidationException) ex;
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
-
-        return this.handleExceptionInternal(ex, new ApiError(Map.of("message",val.getMessages())), headers, val.statusCode, request);
+        return this.handleExceptionInternal(ex, new ApiError(Map.of("message",
+                val.getMessages())), this.defaultHttpHeaders(),
+                val.statusCode, request);
     }
 
     /** A single place to customize the response body of all Exception types. */

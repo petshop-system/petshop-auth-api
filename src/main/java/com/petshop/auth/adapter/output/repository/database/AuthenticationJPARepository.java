@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AuthenticationJPARepository extends JpaRepository<AuthenticationDatabase, Long> {
 
-    AuthenticationDatabase getByLoginAndPassword(String login, String password);
+    AuthenticationDatabase getByLogin(String login);
 
 }

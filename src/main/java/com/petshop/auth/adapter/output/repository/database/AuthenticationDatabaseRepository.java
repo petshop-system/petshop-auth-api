@@ -31,10 +31,10 @@ public class AuthenticationDatabaseRepository implements com.petshop.auth.applic
     }
 
     @Override
-    public AuthenticationDomain getByLoginAndPassword(String login, String password) throws Exception {
+    public AuthenticationDomain getByLogin(String login) throws Exception {
 
         AuthenticationDatabase authenticationDatabase =
-                authenticationJPARepository.getByLoginAndPassword(login, password);
+                authenticationJPARepository.getByLogin(login);
 
         return ObjectUtils.isEmpty(authenticationDatabase)?
                 null:authenticationDatabase.toAuthenticationDomain();

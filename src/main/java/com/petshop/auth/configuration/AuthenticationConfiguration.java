@@ -9,6 +9,8 @@ import com.petshop.auth.application.port.output.repository.AuthenticationCacheRe
 import com.petshop.auth.application.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 public class AuthenticationConfiguration {
@@ -26,7 +28,14 @@ public class AuthenticationConfiguration {
 
     @Bean
     AuthenticationUsercase authenticationUsercase (AuthenticationDatabaseRepository authenticationDatabaseRepository,
-                                                   AuthenticationCacheRepository authenticationCacheRepository) {
-        return new AuthenticationService(authenticationCacheRepository, authenticationDatabaseRepository);
+                                                   AuthenticationCacheRepository authenticationCacheRepository,
+                                                   PasswordEncoder passwordEncoder) {
+        return new AuthenticationService(authenticationCacheRepository, authenticationDatabaseRepository,
+                 passwordEncoder);
+    }
+
+    @Bean
+    PasswordEncoder passwordEncoder () {
+        return new BCryptPasswordEncoder(10);
     }
 }

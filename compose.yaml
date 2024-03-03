@@ -28,5 +28,48 @@ services:
     networks:
       rede_local:
 
+  petshop-api-gateway:
+    container_name: petshop-api-gateway
+    build: ${PETSHOP_GO_FOLDER}/petshop-api-gateway
+    restart: always
+    environment:
+      - DB_USER=petshop-system
+      - DB_PASSWORD=test1234
+      - DB_NAME=petshop-system
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_TYPE=postgres
+    ports:
+      - "9999:9999"
+    expose:
+      - "9999"
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    networks:
+      rede_local:
+
+  petshop-auth-api:
+    container_name: petshop-auth-api
+    build: ${DEV_ENV_FOLDER}/petshop-auth-api
+    restart: always
+    environment:
+      - SPRING_PROFILE=docker
+    ports:
+      - "5004:5004"
+    expose:
+      - "5004"
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+      petshop-api-gateway:
+        condition: service_started
+    networks:
+      rede_local:
+
 networks:
   rede_local:

@@ -4,8 +4,11 @@ import com.petshop.auth.application.domain.AuthenticationDomain;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.application.port.output.repository.AuthenticationCacheRepository;
 import com.petshop.auth.application.port.output.repository.AuthenticationDatabaseRepository;
-import com.petshop.auth.exception.InternalServerErrorException;
+import com.petshop.auth.exception.UnauthorizedException;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Objects;
 
 public class AuthenticationService implements AuthenticationUsercase {
 
@@ -13,9 +16,14 @@ public class AuthenticationService implements AuthenticationUsercase {
 
     private final AuthenticationDatabaseRepository authenticationDatabaseRepository;
 
-    public AuthenticationService(AuthenticationCacheRepository authenticationCacheRepository, AuthenticationDatabaseRepository authenticationDatabaseRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthenticationService(AuthenticationCacheRepository authenticationCacheRepository,
+                                 AuthenticationDatabaseRepository authenticationDatabaseRepository,
+                                 PasswordEncoder passwordEncoder) {
         this.authenticationCacheRepository = authenticationCacheRepository;
         this.authenticationDatabaseRepository = authenticationDatabaseRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -26,6 +34,8 @@ public class AuthenticationService implements AuthenticationUsercase {
     @Override
     public AuthenticationDomain create(AuthenticationDomain authenticationDomain) throws Exception {
 
+        String passwordEncoded = passwordEncoder.encode(authenticationDomain.getPassword());
+        authenticationDomain.setPassword(passwordEncoded);
         authenticationDomain = this.authenticationDatabaseRepository.Save(authenticationDomain);
         this.authenticationCacheRepository.set(authenticationDomain);
 
@@ -38,12 +48,18 @@ public class AuthenticationService implements AuthenticationUsercase {
     }
 
     @Override
-    public AuthenticationDomain getByLoginAndPassword(String login, String password) throws Exception {
+    public AuthenticationDomain login(String login, String password) throws Exception {
 
         if (ObjectUtils.isEmpty(login) || ObjectUtils.isEmpty(password)) {
-            throw new InternalServerErrorException("login or password not informed");
+            throw new UnauthorizedException("login or password not informed");
         }
 
-        return this.authenticationDatabaseRepository.getByLoginAndPassword(login, password);
+        AuthenticationDomain authenticationDomain = this.authenticationDatabaseRepository.getByLogin(login);
+        if (ObjectUtils.isEmpty(authenticationDomain) ||
+                !passwordEncoder.matches(password, authenticationDomain.getPassword())) {
+            throw new UnauthorizedException("unauthorized access");
+        }
+
+        return authenticationDomain;
     }
 }

@@ -15,6 +15,7 @@ create schema petshop_gateway
 INSERT INTO petshop_gateway.router (router, configuration)
 VALUES
     ('address', '{"host": "http://petshop-api:5001", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-api"}'),
+    ('authentication', '{"host": "http://petshop-auth-api:5004", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-auth-api"}'),
     ('customer', '{"host": "http://petshop-api:5001", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-api"}'),
     ('employee', '{"host": "http://petshop-admin-api:5002", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-admin-api"}'),
     ('schedule', '{"host": "https://demo2908199.mockable.io", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-api"}'),
@@ -27,7 +28,7 @@ create schema petshop_auth
     create table authentication
     (
         id serial not null constraint petshop_auth_api_authentication_pkey primary key,
-        login varchar(100) not null,
+        login varchar(100) not null unique,
         password varchar(255),
         id_user int
     )

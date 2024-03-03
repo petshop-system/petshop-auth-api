@@ -10,6 +10,6 @@ public interface AuthenticationDatabaseRepository {
 
     AuthenticationDomain getByIdUser(Long idUser) throws Exception;
 
-    AuthenticationDomain getByLoginAndPassword(String login, String password) throws Exception;
+    AuthenticationDomain getByLogin(String login) throws Exception;
 
 }
