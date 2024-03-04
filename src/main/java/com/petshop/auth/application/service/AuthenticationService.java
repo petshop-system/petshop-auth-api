@@ -54,7 +54,7 @@ public class AuthenticationService implements AuthenticationUsercase {
             throw new UnauthorizedException("login or password not informed");
         }
 
-        AuthenticationDomain authenticationDomain = this.authenticationDatabaseRepository.getByLogin(login);
+        AuthenticationDomain authenticationDomain = this.authenticationDatabaseRepository.getByLoginAndActive(login);
         if (ObjectUtils.isEmpty(authenticationDomain) ||
                 !passwordEncoder.matches(password, authenticationDomain.getPassword())) {
             throw new UnauthorizedException("unauthorized access");

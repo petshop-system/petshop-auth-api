@@ -3,9 +3,11 @@ package com.petshop.auth.exception;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.function.Supplier;
+
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UnauthorizedException extends RuntimeException{
+public class UnauthorizedException extends RuntimeException implements Supplier<UnauthorizedException> {
 
     String message;
 
@@ -18,7 +20,7 @@ public class UnauthorizedException extends RuntimeException{
         return message;
     }
 
-    //    @Override
+    @Override
     public UnauthorizedException get() {
         return this;
     }

@@ -51,25 +51,25 @@ services:
     networks:
       rede_local:
 
-  petshop-auth-api:
-    container_name: petshop-auth-api
-    build: ${DEV_ENV_FOLDER}/petshop-auth-api
-    restart: always
-    environment:
-      - SPRING_PROFILE=docker
-    ports:
-      - "5004:5004"
-    expose:
-      - "5004"
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
-      petshop-api-gateway:
-        condition: service_started
-    networks:
-      rede_local:
+#  petshop-auth-api:
+#    container_name: petshop-auth-api
+#    build: ${DEV_ENV_FOLDER}/petshop-auth-api
+#    restart: always
+#    environment:
+#      - SPRING_PROFILE=docker
+#    ports:
+#      - "5004:5004"
+#    expose:
+#      - "5004"
+#    depends_on:
+#      postgres:
+#        condition: service_started
+#      redis:
+#        condition: service_started
+#      petshop-api-gateway:
+#        condition: service_started
+#    networks:
+#      rede_local:
 
 networks:
   rede_local:
