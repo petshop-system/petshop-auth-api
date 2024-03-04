@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record AuthenticationResponse(
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @JsonProperty("usuario")
-        String usuario,
+        @JsonProperty("login")
+        String login,
 
         @JsonInclude(JsonInclude.Include.NON_NULL)
-        @JsonProperty("id_usuario")
-        Long idUsuario) {
+        @JsonProperty("id_user")
+        Long idUser) {
 
 }
