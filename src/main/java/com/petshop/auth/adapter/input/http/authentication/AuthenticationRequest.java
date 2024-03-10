@@ -1,4 +1,4 @@
-package com.petshop.auth.adapter.input.http.senha;
+package com.petshop.auth.adapter.input.http.authentication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.petshop.auth.application.domain.AuthenticationDomain;

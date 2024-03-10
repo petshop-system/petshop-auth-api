@@ -22,6 +22,8 @@ server:
       charset: UTF-8
       enabled: true
   max-http-request-header-size: 48000
+  error:
+    include-stacktrace: never
 
 ---
 spring:
@@ -38,8 +40,8 @@ spring:
   jpa:
     defer-datasource-initialization: true
     show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+#    hibernate:
+#      ddl-auto: create-drop
   sql:
     init:
       mode: always
@@ -65,8 +67,8 @@ spring:
   jpa:
     defer-datasource-initialization: true
     show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+#    hibernate:
+#      ddl-auto: create-drop
   sql:
     init:
       mode: always

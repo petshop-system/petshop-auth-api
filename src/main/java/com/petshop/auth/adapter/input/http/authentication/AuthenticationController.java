@@ -1,15 +1,16 @@
-package com.petshop.auth.adapter.input.http.senha;
+package com.petshop.auth.adapter.input.http.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.adapter.input.http.ResponseHTTP;
 import com.petshop.auth.application.domain.AuthenticationDomain;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
-import com.petshop.auth.application.service.AuthenticationService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping(value = "/authentication",
@@ -36,13 +37,13 @@ public class AuthenticationController {
         AuthenticationResponse authenticationResponse = new AuthenticationResponse(authenticationDomain.getLogin(),
                 authenticationRequest.idUser());
 
-        return new ResponseHTTP("Sucesso ao criar senha", authenticationResponse);
+        return new ResponseHTTP("Sucesso ao criar senha", LocalDateTime.now(), authenticationResponse);
     }
 
     @GetMapping(path = {"/", ""})
     @ResponseBody
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ResponseHTTP> validate (@RequestParam(value = "login") String login,
+    public ResponseEntity<ResponseHTTP> login (@RequestParam(value = "login") String login,
                                     @RequestParam(value = "password") String password) throws Exception {
 
         AuthenticationDomain authenticationDomain = authenticationUsercase.login(login, password);
@@ -53,6 +54,6 @@ public class AuthenticationController {
         AuthenticationResponse authenticationResponse = new AuthenticationResponse(authenticationDomain.getLogin(),
                 authenticationDomain.getIdUser());
 
-        return ResponseEntity.ok().body(new ResponseHTTP("Sucesso ao criar senha", authenticationResponse)) ;
+        return ResponseEntity.ok().body(new ResponseHTTP("Sucesso ao logar", LocalDateTime.now(), authenticationResponse)) ;
     }
 }

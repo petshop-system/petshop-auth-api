@@ -27,6 +27,9 @@ public class AuthenticationDatabase implements Serializable {
     @Column(name = "id_user")
     private Long idUser;
 
+    @Column(name = "active")
+    private Boolean active;
+
     public AuthenticationDatabase(AuthenticationDomain authenticationDomain) {
         this.setPassword(authenticationDomain.getPassword());
         this.setId(authenticationDomain.getId());
