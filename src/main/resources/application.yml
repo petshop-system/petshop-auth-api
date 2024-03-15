@@ -25,6 +25,16 @@ server:
   error:
     include-stacktrace: never
 
+encryption:
+  aes:
+    key: ${ENCRYPTION_AES_KEY} # p&tsh0p-s7st3m
+    algorithmic: AES/CBC/PKCS5PADDING
+
+jwt:
+  app:
+    jwt-secret: ${JWT_SECRET}
+    jwt-expiration-ms: 1800 # 30 minutos
+
 ---
 spring:
   config:

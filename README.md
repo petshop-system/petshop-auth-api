@@ -1,3 +1,4 @@
-# petshop-auth-api
+# Petshop-auth-api
 
 Project to handle the authentication and authorization for Petshop-System.
+

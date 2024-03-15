@@ -30,9 +30,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({NotFoundException.class})
 //    @ResponseStatus(HttpStatus.NOT_FOUND)
     public final ResponseEntity<ApiError> handleNotFoundException(Exception ex, WebRequest request) {
-
         NotFoundException notF = (NotFoundException) ex;
-
         return this.handleExceptionInternal(ex,
                 new ApiError(notF.getMessage()),
                 this.defaultHttpHeaders(), HttpStatus.NOT_FOUND, request);
@@ -41,9 +39,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({InternalServerErrorException.class})
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public final ResponseEntity<ApiError> handleInternalServerErrorException(Exception ex, WebRequest request) {
-
         InternalServerErrorException isre = (InternalServerErrorException) ex;
-
         return this.handleExceptionInternal(ex, new ApiError(isre.getMessage()),
                 this.defaultHttpHeaders(),
                 HttpStatus.INTERNAL_SERVER_ERROR, request);
@@ -52,9 +48,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler({UnauthorizedException.class})
 //    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public final ResponseEntity<ApiError> handleUnauthorizedException(Exception ex, WebRequest request) {
-
         UnauthorizedException ue = (UnauthorizedException) ex;
-
         return this.handleExceptionInternal(ue, new ApiError(ue.getMessage()),
                 this.defaultHttpHeaders(),
                 HttpStatus.UNAUTHORIZED, request);
@@ -62,11 +56,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler({ValidationException.class})
     public final ResponseEntity<ApiError> handleValidationException(Exception ex, WebRequest request) {
-
         ValidationException val = (ValidationException) ex;
         return this.handleExceptionInternal(ex, new ApiError(val.getMessages()),
                 this.defaultHttpHeaders(),
                 val.statusCode, request);
+    }
+
+    @ExceptionHandler({ForbiddenException.class})
+//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public final ResponseEntity<ApiError> handleForbiddenException(Exception ex, WebRequest request) {
+        ForbiddenException ue = (ForbiddenException) ex;
+        return this.handleExceptionInternal(ue, new ApiError(ue.getMessage()),
+                this.defaultHttpHeaders(),
+                HttpStatus.FORBIDDEN, request);
     }
 
     /** A single place to customize the response body of all Exception types. */
@@ -75,7 +77,6 @@ public class GlobalExceptionHandler {
             request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
             return null;
         }
-
         return ResponseEntity.status(status).body(body);
     }
 }
