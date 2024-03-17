@@ -1,6 +1,7 @@
-package com.petshop.auth.adapter.output.repository.database;
+package com.petshop.auth.adapter.output.repository.database.authentication;
 
 import com.petshop.auth.application.domain.AuthenticationDomain;
+import com.petshop.auth.application.domain.ProfileDomain;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,10 +14,10 @@ import java.io.Serializable;
 @NoArgsConstructor
 @Table(name = "authentication", schema = "petshop_auth")
 @Entity(name = "authentication")
-public class AuthenticationDatabase implements Serializable {
+public class AuthenticationDatabaseDomain implements Serializable {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -30,19 +31,25 @@ public class AuthenticationDatabase implements Serializable {
     @Column(name = "active")
     private Boolean active;
 
-    public AuthenticationDatabase(AuthenticationDomain authenticationDomain) {
+    @Column(name = "fk_profile")
+    private String profile;
+
+    public AuthenticationDatabaseDomain(AuthenticationDomain authenticationDomain) {
         this.setPassword(authenticationDomain.getPassword());
         this.setId(authenticationDomain.getId());
         this.setLogin(authenticationDomain.getLogin());
         this.setIdUser(authenticationDomain.getIdUser());
+        this.setProfile(authenticationDomain.getProfile().getName());
+        this.setActive(authenticationDomain.getActive());
     }
 
-    AuthenticationDomain toAuthenticationDomain() {
+    public AuthenticationDomain toAuthenticationDomain() {
         AuthenticationDomain authenticationDomain = new AuthenticationDomain();
         authenticationDomain.setPassword(this.getPassword());
         authenticationDomain.setId(this.getId());
         authenticationDomain.setLogin(this.getLogin());
         authenticationDomain.setIdUser(this.getIdUser());
+        authenticationDomain.setProfile(ProfileDomain.Profile.valueOf(this.getProfile()));
 
         return authenticationDomain;
     }

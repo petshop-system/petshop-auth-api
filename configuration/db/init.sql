@@ -1,37 +1,48 @@
-create schema petshop_gateway
+create schema petshop_auth
 
-    create table router
+    create table profile
     (
-        id serial not null
-            constraint petshop_api_gateway_pkey primary key,
-        router  varchar(255) not null,
-        configuration jsonb default '{"":""}'
+        name        varchar(100) not null unique primary key,
+        description varchar(200)
     )
 
     create
-        unique index petshop_api_gateway_id_uindex
-        on router (id);
+        unique index petshop_auth_api_profile_name_uindex
+        on profile (name)
 
-INSERT INTO petshop_gateway.router (router, configuration)
-VALUES
-    ('address', '{"host": "http://petshop-api:5001", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-api"}'),
-    ('authentication', '{"host": "http://petshop-auth-api:5004", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-auth-api"}'),
-    ('bff-desktop-service', '{"host": "http://petshop-bff-desktop:9998", "replace-old-app-context": "petshop-system/bff-desktop-service", "replace-new-app-context": "petshop-bff-desktop"}'),
-    ('customer', '{"host": "http://petshop-api:5001", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-api"}'),
-    ('employee', '{"host": "http://petshop-admin-api:5002", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-admin-api"}'),
-    ('schedule', '{"host": "https://demo2908199.mockable.io", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-api"}'),
-    ('schedule-request', '{"host": "http://petshop-message-api:5003", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-message-api"}'),
-    ('service', '{"host": "http://petshop-admin-api:5002", "replace-old-app-context": "petshop-system", "replace-new-app-context": "petshop-admin-api"}');
+    create table access
+    (
+        action      varchar(100) not null unique primary key,
+        description varchar(100)
+    )
 
-create schema petshop_auth
+    create
+        unique index petshop_auth_api_access_action_uindex
+        on access (action)
+
+    create table profile_access
+    (
+        fk_profile varchar not null,
+        fk_access  varchar not null,
+        FOREIGN KEY (fk_profile) references profile (name),
+        FOREIGN KEY (fk_access) references access (action),
+        constraint petshop_auth_api_profile_access_pkey PRIMARY KEY (fk_profile, fk_access)
+    )
+
+    create
+        unique index petshop_auth_api_profile_access_uindex
+        on profile_access (fk_profile, fk_access)
 
     create table authentication
     (
-        id serial not null constraint petshop_auth_api_authentication_pkey primary key,
-        login varchar(100) not null unique,
-        password varchar(255),
-        id_user int,
-        active bool default false
+        id         serial       not null
+            constraint petshop_auth_api_authentication_pkey primary key,
+        login      varchar(100) not null unique,
+        password   varchar(255),
+        id_user    int,
+        active     bool         not null default false,
+        fk_profile varchar      not null default '',
+        FOREIGN KEY (fk_profile) references profile (name)
     )
 
     create
@@ -44,10 +55,110 @@ create schema petshop_auth
 
     create
         unique index petshop_auth_api_authentication_login_uindex
-        on authentication (login);
+        on authentication (login)
 
-INSERT INTO petshop_auth.authentication (login, password, id_user)
-VALUES ('admin@petshopsystem.com', '$2a$10$InNNO0QNeLe3Yc2mWPYmvOta421VA64e1Hq1mpPGvgymdm6w0uBvq', 1); -- senha 1234
+    create table access_token
+    (
+        token                varchar(200) not null unique primary key,
+        fk_id_authentication int          not null,
+        date_created         timestamp default timezone('BRT'::text, now()),
+        FOREIGN KEY (fk_id_authentication) REFERENCES authentication (id)
+    )
+
+    create
+        unique index petshop_auth_api_access_token_token_uindex
+        on access_token (token);
+
+INSERT INTO petshop_auth.profile(name, description)
+VALUES ('ADMINISTRATOR', 'system administrator'),
+       ('API', 'api request'),
+       ('CUSTOMER', 'costumer user'),
+       ('EMPLOYEE', 'employee user'),
+       ('MANAGER', 'manager user');
+
+INSERT INTO petshop_auth.access(action, description)
+VALUES ('CUSTOMER_CREATE', 'access to create a new customer'),
+       ('CUSTOMER_UPDATE', 'access to update a known customer'),
+       ('EMPLOYEE_CREATE', 'access to create a ner employee'),
+       ('EMPLOYEE_UPDATE', 'access to update a known employee');
+
+INSERT INTO petshop_auth.profile_access(fk_profile, fk_access)
+VALUES ('ADMINISTRATOR', 'CUSTOMER_CREATE'),
+       ('ADMINISTRATOR', 'CUSTOMER_UPDATE'),
+       ('ADMINISTRATOR', 'EMPLOYEE_CREATE'),
+       ('ADMINISTRATOR', 'EMPLOYEE_UPDATE'),
+       ('API', 'CUSTOMER_CREATE'),
+       ('API', 'CUSTOMER_UPDATE'),
+       ('CUSTOMER', 'CUSTOMER_CREATE'),
+       ('CUSTOMER', 'CUSTOMER_UPDATE'),
+       ('EMPLOYEE', 'CUSTOMER_CREATE'),
+       ('EMPLOYEE', 'CUSTOMER_UPDATE'),
+       ('MANAGER', 'CUSTOMER_CREATE'),
+       ('MANAGER', 'CUSTOMER_UPDATE'),
+       ('MANAGER', 'EMPLOYEE_CREATE'),
+       ('MANAGER', 'EMPLOYEE_UPDATE');
+
+INSERT INTO petshop_auth.authentication (login, password, id_user, fk_profile)
+VALUES ('admin@petshopsystem.com', '$2a$10$InNNO0QNeLe3Yc2mWPYmvOta421VA64e1Hq1mpPGvgymdm6w0uBvq', 1,
+        'ADMINISTRATOR'); -- senha 1234
+
+create schema petshop_gateway
+
+    create table router
+    (
+        id            serial       not null
+            constraint petshop_api_gateway_pkey primary key,
+        router        varchar(255) not null,
+        configuration jsonb default '{
+          "": ""
+        }'
+    )
+
+    create
+        unique index petshop_api_gateway_id_uindex
+        on router (id);
+
+INSERT INTO petshop_gateway.router (router, configuration)
+VALUES ('address', '{
+  "host": "http://petshop-api:5001",
+  "replace-old-app-context": "petshop-system",
+  "replace-new-app-context": "petshop-api"
+}'),
+       ('authentication', '{
+         "host": "http://petshop-auth-api:5004",
+         "replace-old-app-context": "petshop-system",
+         "replace-new-app-context": "petshop-auth-api"
+       }'),
+       ('bff-desktop-service', '{
+         "host": "http://petshop-bff-desktop:9998",
+         "replace-old-app-context": "petshop-system/bff-desktop-service",
+         "replace-new-app-context": "petshop-bff-desktop"
+       }'),
+       ('customer', '{
+         "host": "http://petshop-api:5001",
+         "replace-old-app-context": "petshop-system",
+         "replace-new-app-context": "petshop-api"
+       }'),
+       ('employee', '{
+         "host": "http://petshop-admin-api:5002",
+         "replace-old-app-context": "petshop-system",
+         "replace-new-app-context": "petshop-admin-api"
+       }'),
+       ('schedule', '{
+         "host": "https://demo2908199.mockable.io",
+         "replace-old-app-context": "petshop-system",
+         "replace-new-app-context": "petshop-api"
+       }'),
+       ('schedule-request', '{
+         "host": "http://petshop-message-api:5003",
+         "replace-old-app-context": "petshop-system",
+         "replace-new-app-context": "petshop-message-api"
+       }'),
+       ('service', '{
+         "host": "http://petshop-admin-api:5002",
+         "replace-old-app-context": "petshop-system",
+         "replace-new-app-context": "petshop-admin-api"
+       }');
 
 create schema petshop_api
 
@@ -331,10 +442,12 @@ VALUES ('900045678', '72', 'celular', 3);
 -- pet control
 
 INSERT INTO petshop_api.species (name)
-VALUES ('Canino'), ('Felino');
+VALUES ('Canino'),
+       ('Felino');
 
 INSERT INTO petshop_api.breed (name, fk_id_species)
-VALUES ('Pastor Alemao', 1), ('Siames', 2);
+VALUES ('Pastor Alemao', 1),
+       ('Siames', 2);
 
 INSERT INTO petshop_api.pet (name, date_created, date_birthday, fk_id_customer, fk_id_breed, fk_id_contract)
 VALUES ('Rex', now(), to_date('12/12/2016', 'dd/MM/yyyy'), 1, 1, 1),
@@ -371,7 +484,7 @@ VALUES ('Brave Vacinador', 'FUNC-0003', 6, 1);
 
 -- service employee attention time
 
-INSERT INTO petshop_api.service_employee_attention_time(active, initial_time,  fk_id_service, fk_id_contract, fk_id_employee)
+INSERT INTO petshop_api.service_employee_attention_time(active, initial_time, fk_id_service, fk_id_contract, fk_id_employee)
 VALUES (true, '9:00', 1, 1, 1),
        (true, '9:00', 2, 1, 1),
        (true, '10:00', 1, 1, 1),
@@ -380,7 +493,8 @@ VALUES (true, '9:00', 1, 1, 1),
        (true, '13:00', 2, 1, 2),
        (false, '8:00', 3, 1, 3);
 
-INSERT INTO petshop_api.schedule(date_created, number, booked_at, price, fk_id_pet, fk_id_service_employee_attention_time)
+INSERT INTO petshop_api.schedule(date_created, number, booked_at, price, fk_id_pet,
+                                 fk_id_service_employee_attention_time)
 VALUES (now(), '2024020001', now() + interval '1 day', 10.50, 1, 1),
        (now(), '2024020002', now() + interval '1 day', 100.50, 2, 4);
 
@@ -390,10 +504,10 @@ VALUES (now(), '2024020001', now() + interval '1 day', 10.50, 1, 1),
 CREATE OR REPLACE FUNCTION petshop_api.GET_SERVICE_ATTENTION_AVAILABLE(P_DATE_SCHEDULE VARCHAR(12), P_SERVICE_ID INTEGER)
     RETURNS TABLE
             (
-                service_attention_id int,
-                service_attention_active bool,
-                service_attention_initial_time varchar(255),
-                service_attention_fk_id_service int,
+                service_attention_id             int,
+                service_attention_active         bool,
+                service_attention_initial_time   varchar(255),
+                service_attention_fk_id_service  int,
                 service_attention_fk_id_contract int,
                 service_attention_fk_id_employee int
             )
@@ -402,13 +516,12 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        select
-            service_attention.id::integer,
-            service_attention.active,
-            service_attention.initial_time,
-            service_attention.fk_id_service,
-            service_attention.fk_id_contract,
-            service_attention.fk_id_employee
+        select service_attention.id::integer,
+               service_attention.active,
+               service_attention.initial_time,
+               service_attention.fk_id_service,
+               service_attention.fk_id_contract,
+               service_attention.fk_id_employee
         from (select service_attention.*
               from petshop_api.service_employee_attention_time service_attention
               where 1 = 1
@@ -416,20 +529,18 @@ BEGIN
                 and not exists (select 1
                                 from petshop_api.schedule schedule
                                 where service_attention.id = schedule.fk_id_service_employee_attention_time
-                                  and schedule.booked_at = TO_DATE(P_DATE_SCHEDULE, 'YYYY-MM-DD')))
-                 service_attention -- getting all available services attention in order to schedules
+                                  and schedule.booked_at = TO_DATE(P_DATE_SCHEDULE, 'YYYY-MM-DD'))) service_attention -- getting all available services attention in order to schedules
         where 1 = 1
           and not exists( -- denying select
             -- select to get employees with possibles appointments in the same hour
-            select 1 from petshop_api.schedule schedule
-                              inner join petshop_api.service_employee_attention_time seat
-                                         on schedule.fk_id_service_employee_attention_time = seat.id
+            select 1
+            from petshop_api.schedule schedule
+                     inner join petshop_api.service_employee_attention_time seat
+                                on schedule.fk_id_service_employee_attention_time = seat.id
             where 1 = 1
               and schedule.booked_at = TO_DATE(P_DATE_SCHEDULE, 'YYYY-MM-DD')
               and service_attention.initial_time = seat.initial_time
-              and seat.fk_id_employee = service_attention.fk_id_employee
-
-        )
+              and seat.fk_id_employee = service_attention.fk_id_employee)
           and service_attention.fk_id_service = P_SERVICE_ID -- getting only service attention for specific service
         order by cast(SPLIT_PART(initial_time, ':', 1) as INTEGER);
 end;
