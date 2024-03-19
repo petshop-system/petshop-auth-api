@@ -12,7 +12,7 @@ services:
       rede_local:
 
   postgres:
-    image: postgres
+    image: postgres:16.2
     restart: always
     environment:
       - POSTGRES_USER=petshop-system
@@ -51,25 +51,27 @@ services:
     networks:
       rede_local:
 
-  petshop-auth-api:
-    container_name: petshop-auth-api
-    build: ${DEV_ENV_FOLDER}/petshop-auth-api
-    restart: always
-    environment:
-      - SPRING_PROFILE=docker
-    ports:
-      - "5004:5004"
-    expose:
-      - "5004"
-    depends_on:
-      postgres:
-        condition: service_started
-      redis:
-        condition: service_started
-      petshop-api-gateway:
-        condition: service_started
-    networks:
-      rede_local:
+#  petshop-auth-api:
+#    container_name: petshop-auth-api
+#    build: ${DEV_ENV_FOLDER}/petshop-auth-api
+#    restart: always
+#    environment:
+#      - SPRING_PROFILE=docker
+#      - JWT_SECRET=f39bfd500d348b2180f25a4df7c2b5b057a4ee73e27b980573b38a5b7b651cc6  # petshop-system - https://cryptii.com/pipes/hmac
+#      - ENCRYPTION_AES_KEY=6a9f163c84d74b858d510e26c65ebd28  # p&tsh0p-s7st3m
+#    ports:
+#      - "5004:5004"
+#    expose:
+#      - "5004"
+#    depends_on:
+#      postgres:
+#        condition: service_started
+#      redis:
+#        condition: service_started
+#      petshop-api-gateway:
+#        condition: service_started
+#    networks:
+#      rede_local:
 
 networks:
   rede_local:

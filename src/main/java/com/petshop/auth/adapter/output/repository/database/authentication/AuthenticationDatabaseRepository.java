@@ -1,4 +1,4 @@
-package com.petshop.auth.adapter.output.repository.database;
+package com.petshop.auth.adapter.output.repository.database.authentication;
 
 import com.petshop.auth.application.domain.AuthenticationDomain;
 import org.apache.commons.lang3.ObjectUtils;
@@ -12,10 +12,10 @@ public class AuthenticationDatabaseRepository implements com.petshop.auth.applic
     }
 
     @Override
-    public AuthenticationDomain Save(AuthenticationDomain authenticationDomain) throws Exception {
+    public AuthenticationDomain save(AuthenticationDomain authenticationDomain) throws Exception {
 
-        AuthenticationDatabase authenticationDatabase = new AuthenticationDatabase(authenticationDomain);
-        AuthenticationDatabase save = this.authenticationJPARepository.save(authenticationDatabase);
+        AuthenticationDatabaseDomain authenticationDatabaseDomain = new AuthenticationDatabaseDomain(authenticationDomain);
+        AuthenticationDatabaseDomain save = this.authenticationJPARepository.save(authenticationDatabaseDomain);
 
         return save.toAuthenticationDomain();
     }
@@ -31,12 +31,12 @@ public class AuthenticationDatabaseRepository implements com.petshop.auth.applic
     }
 
     @Override
-    public AuthenticationDomain getByLogin(String login) throws Exception {
+    public AuthenticationDomain getByLoginAndActive(String login) throws Exception {
 
-        AuthenticationDatabase authenticationDatabase =
-                authenticationJPARepository.getByLogin(login);
+        AuthenticationDatabaseDomain authenticationDatabaseDomain =
+                authenticationJPARepository.getByLoginAndActive(login, true);
 
-        return ObjectUtils.isEmpty(authenticationDatabase)?
-                null:authenticationDatabase.toAuthenticationDomain();
+        return ObjectUtils.isEmpty(authenticationDatabaseDomain)?
+                null: authenticationDatabaseDomain.toAuthenticationDomain();
     }
 }

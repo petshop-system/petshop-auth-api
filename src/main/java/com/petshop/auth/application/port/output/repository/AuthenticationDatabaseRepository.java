@@ -4,12 +4,12 @@ import com.petshop.auth.application.domain.AuthenticationDomain;
 
 public interface AuthenticationDatabaseRepository {
 
-    AuthenticationDomain Save (AuthenticationDomain authenticationDomain) throws Exception;
+    AuthenticationDomain save (AuthenticationDomain authenticationDomain) throws Exception;
 
     AuthenticationDomain getByID(Long id) throws Exception;;
 
     AuthenticationDomain getByIdUser(Long idUser) throws Exception;
 
-    AuthenticationDomain getByLogin(String login) throws Exception;
+    AuthenticationDomain getByLoginAndActive(String login) throws Exception;
 
 }

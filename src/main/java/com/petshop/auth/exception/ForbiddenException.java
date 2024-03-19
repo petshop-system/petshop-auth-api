@@ -7,11 +7,11 @@ import java.util.function.Supplier;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class UnauthorizedException extends RuntimeException implements Supplier<UnauthorizedException> {
+public class ForbiddenException extends RuntimeException implements Supplier<ForbiddenException> {
 
     String message;
 
-    public UnauthorizedException(String message) {
+    public ForbiddenException(String message) {
         this.setMessage(message);
     }
 
@@ -21,8 +21,9 @@ public class UnauthorizedException extends RuntimeException implements Supplier<
     }
 
     @Override
-    public UnauthorizedException get() {
+    public ForbiddenException get() {
         return this;
     }
 
 }
+

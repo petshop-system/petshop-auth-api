@@ -1,4 +1,4 @@
-package com.petshop.auth.adapter.output.repository.cache;
+package com.petshop.auth.adapter.output.repository.cache.authentication;
 
 import com.petshop.auth.application.domain.AuthenticationDomain;
 import lombok.AllArgsConstructor;
@@ -13,7 +13,7 @@ import java.io.Serializable;
 @RedisHash(timeToLive = 300, value = "Authentication")
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationCache implements Serializable {
+public class AuthenticationCacheDomain implements Serializable {
 
     @NonNull
     private Long id;
@@ -27,10 +27,16 @@ public class AuthenticationCache implements Serializable {
     @NonNull
     private Long idUser;
 
-    public AuthenticationCache(AuthenticationDomain authenticationDomain) {
+    private Boolean active;
+
+    private String profile;
+
+    public AuthenticationCacheDomain(AuthenticationDomain authenticationDomain) {
         this.setPassword(authenticationDomain.getPassword());
         this.setId(authenticationDomain.getId());
         this.setLogin(authenticationDomain.getLogin());
         this.setIdUser(authenticationDomain.getIdUser());
+        this.setActive(authenticationDomain.getActive());
+        this.setProfile(authenticationDomain.getProfile().getName());
     }
 }

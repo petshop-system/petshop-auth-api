@@ -10,6 +10,10 @@ public class AuthenticationDomain {
 
     private Long idUser;
 
+    private ProfileDomain.Profile profile;
+
+    private Boolean active;
+
     public AuthenticationDomain() {
         super();
     }
@@ -20,6 +24,11 @@ public class AuthenticationDomain {
         this.login = login;
         this.password = password;
         this.idUser = idUser;
+    }
+
+    public AuthenticationDomain(Long id, String login, String password, Long idUser, ProfileDomain.Profile profile) {
+        this(id, login, password, idUser);
+        this.profile = profile;
     }
 
     public Long getId() {
@@ -52,5 +61,21 @@ public class AuthenticationDomain {
 
     public void setIdUser(Long idUser) {
         this.idUser = idUser;
+    }
+
+    public ProfileDomain.Profile getProfile() {
+        return profile;
+    }
+
+    public void setProfile(ProfileDomain.Profile profile) {
+        this.profile = profile;
+    }
+
+    public Boolean getActive() {
+        return active;
+    }
+
+    public void setActive(Boolean active) {
+        this.active = active;
     }
 }

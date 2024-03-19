@@ -1,4 +1,4 @@
-package com.petshop.auth.adapter.output.repository.cache;
+package com.petshop.auth.adapter.output.repository.cache.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.application.domain.AuthenticationDomain;
@@ -16,8 +16,8 @@ public class AuthenticationCacheRepository implements com.petshop.auth.applicati
 
     @Override
     public void set(AuthenticationDomain authenticationDomain) throws Exception {
-        AuthenticationCache authenticationCache = new AuthenticationCache(authenticationDomain);
-        authenticationRedisRepository.save(authenticationCache);
+        AuthenticationCacheDomain authenticationCacheDomain = new AuthenticationCacheDomain(authenticationDomain);
+        authenticationRedisRepository.save(authenticationCacheDomain);
     }
 
     @Override

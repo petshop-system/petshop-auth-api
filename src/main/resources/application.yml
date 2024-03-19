@@ -22,6 +22,18 @@ server:
       charset: UTF-8
       enabled: true
   max-http-request-header-size: 48000
+  error:
+    include-stacktrace: never
+
+encryption:
+  aes:
+    key: ${ENCRYPTION_AES_KEY} # p&tsh0p-s7st3m
+    algorithmic: AES/CBC/PKCS5PADDING
+
+jwt:
+  app:
+    jwt-secret: ${JWT_SECRET}
+    jwt-expiration-ms: 1800 # 30 minutos
 
 ---
 spring:
@@ -38,8 +50,8 @@ spring:
   jpa:
     defer-datasource-initialization: true
     show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+#    hibernate:
+#      ddl-auto: create-drop
   sql:
     init:
       mode: always
@@ -65,8 +77,8 @@ spring:
   jpa:
     defer-datasource-initialization: true
     show-sql: true
-    hibernate:
-      ddl-auto: create-drop
+#    hibernate:
+#      ddl-auto: create-drop
   sql:
     init:
       mode: always
