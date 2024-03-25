@@ -2,6 +2,7 @@ package com.petshop.auth.adapter.output.repository.cache.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.application.domain.AuthenticationDomain;
+import com.petshop.auth.utils.converter.AuthenticationConverterMapper;
 
 public class AuthenticationCacheRepository implements com.petshop.auth.application.port.output.repository.AuthenticationCacheRepository {
 
@@ -9,14 +10,20 @@ public class AuthenticationCacheRepository implements com.petshop.auth.applicati
 
     private final ObjectMapper objectMapper;
 
-    public AuthenticationCacheRepository(AuthenticationRedisRepository authenticationRedisRepository, ObjectMapper objectMapper) {
+    private final AuthenticationConverterMapper authenticationConverterMapper;
+
+    public AuthenticationCacheRepository(AuthenticationRedisRepository authenticationRedisRepository,
+                                         ObjectMapper objectMapper,
+                                         AuthenticationConverterMapper authenticationConverterMapper) {
         this.authenticationRedisRepository = authenticationRedisRepository;
         this.objectMapper = objectMapper;
+        this.authenticationConverterMapper = authenticationConverterMapper;
     }
 
     @Override
     public void set(AuthenticationDomain authenticationDomain) throws Exception {
-        AuthenticationCacheDomain authenticationCacheDomain = new AuthenticationCacheDomain(authenticationDomain);
+        AuthenticationCacheDomain authenticationCacheDomain =
+                authenticationConverterMapper.converterToAuthenticationCacheDomain(authenticationDomain);
         authenticationRedisRepository.save(authenticationCacheDomain);
     }
 
