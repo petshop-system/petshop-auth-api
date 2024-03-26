@@ -31,12 +31,12 @@ public class AuthenticationCacheDomain implements Serializable {
 
     private String profile;
 
-    public AuthenticationCacheDomain(AuthenticationDomain authenticationDomain) {
-        this.setPassword(authenticationDomain.getPassword());
-        this.setId(authenticationDomain.getId());
-        this.setLogin(authenticationDomain.getLogin());
-        this.setIdUser(authenticationDomain.getIdUser());
-        this.setActive(authenticationDomain.getActive());
-        this.setProfile(authenticationDomain.getProfile().getName());
-    }
+//    public AuthenticationCacheDomain(AuthenticationDomain authenticationDomain) {
+//        this.setPassword(authenticationDomain.getPassword());
+//        this.setId(authenticationDomain.getId());
+//        this.setLogin(authenticationDomain.getLogin());
+//        this.setIdUser(authenticationDomain.getIdUser());
+//        this.setActive(authenticationDomain.getActive());
+//        this.setProfile(authenticationDomain.getProfile().getName());
+//    }
 }
