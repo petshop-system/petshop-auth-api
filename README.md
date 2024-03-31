@@ -125,17 +125,12 @@ Exemplo de credentials
   * [Tutorial: Create and Verify JWTs in Java](https://developer.okta.com/blog/2018/10/31/jwts-with-java);
   * [Spring Boot Security and JWT tutorial with example](Spring Boot Security and JWT tutorial with example);
   * [Supercharge Java Authentication with JSON Web Tokens (JWTs)](https://www.baeldung.com/java-json-web-tokens-jjwt);
-  
+
 * MapperStruct
   * [Using MapStruct with Project Lombok](https://springframework.guru/using-mapstruct-with-project-lombok/);
   * [mapstruct.org](https://mapstruct.org);
   * [One-Stop Guide to Mapping with MapStruct](https://reflectoring.io/java-mapping-with-mapstruct/);
   * [Maximizing Java Code Efficiency and Clarity with MapStruct: A Comprehensive Guide](https://onloadcode.com/maximizing-java-code-efficiency-and-clarity-with-mapstruct-a-comprehensive-guide/);
 
-* Cache Manager with Redis
-  * [A Guide to Using Redis in Spring Boot: Custom CacheManager](https://dev.to/jackynote/a-guide-to-using-redis-in-spring-boot-custom-cachemanager-4e5k); 
-  * [A Guide To Caching in Spring](https://www.baeldung.com/spring-cache-tutorial);
-  * [Spring Boot Cache with Redis](https://www.baeldung.com/spring-boot-redis-cache);
-
-
-
+* Log estruturado em json
+  * [Structured Logging in Java](https://www.baeldung.com/java-structured-logging); 

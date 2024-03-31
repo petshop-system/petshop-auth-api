@@ -11,6 +11,8 @@ import com.petshop.auth.utils.AESEncryptionUtils;
 import com.petshop.auth.utils.JWTUtils;
 import com.petshop.auth.utils.converter.AuthenticationConverterMapper;
 import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +27,10 @@ import java.util.Map;
 @RequestMapping(value = "/auth",
         produces = {MediaType.APPLICATION_JSON_VALUE})
 public class AuthController {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final String REQUEST_ID = "requestID";
 
     private final AuthenticationProxyService authenticationProxyService;
 
@@ -55,7 +61,8 @@ public class AuthController {
     @PostMapping(path = {"/signup/", "/signup"})
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseHTTP save (@RequestBody String body) throws Exception {
+    public ResponseHTTP save (@RequestBody String body,
+                              @RequestHeader(name = "request_id") String requestID) throws Exception {
 
         AuthenticationRequest authenticationRequest = objectMapper.readValue(aesEncryptionUtils.decrypt(body),
                 AuthenticationRequest.class);
@@ -69,12 +76,20 @@ public class AuthController {
         String jws = jwtUtils.generateToken(authenticationDomain.getLogin());
         authorizationUserCase.getNewAccessToken(jws, authenticationDomain);
 
-        return new ResponseHTTP("sucesso ao criar login", LocalDateTime.now(), jws);
+        String message = "sucesso ao criar login";
+        logger.atInfo()
+                .setMessage(message)
+                .addKeyValue("id_user", authenticationRequest.idUser())
+                .addKeyValue(REQUEST_ID, requestID)
+                .log();
+
+        return new ResponseHTTP(message, LocalDateTime.now(), jws);
     }
 
     @GetMapping(path = {"/signin/", "/signin"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ResponseHTTP> login (@RequestHeader(value = "credentials") String credentials) throws Exception {
+    public ResponseEntity<ResponseHTTP> login (@RequestHeader(value = "credentials") String credentials,
+                                               @RequestHeader(name = "request_id") String requestID) throws Exception {
 
         Map loginPassword = objectMapper.readValue(aesEncryptionUtils.decrypt(credentials), HashMap.class);
         String login = (String) loginPassword.get("login");
@@ -90,21 +105,38 @@ public class AuthController {
         String jws = jwtUtils.generateToken(login);
         authorizationUserCase.getNewAccessToken(jws, authenticationDomain);
 
-        return ResponseEntity.ok().body(new ResponseHTTP("sucesso ao logar", LocalDateTime.now(), jws)) ;
+        String message = "sucesso ao logar";
+        logger.atInfo()
+                .setMessage(message)
+                .addKeyValue("id_user", authenticationDomain.getIdUser())
+                .addKeyValue(REQUEST_ID, requestID)
+                .log();
+
+        return ResponseEntity.ok().body(new ResponseHTTP(message, LocalDateTime.now(), jws)) ;
     }
 
     @PostMapping(path = {"/signout/", "/signout"})
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<ResponseHTTP> logout (@RequestHeader("Authorization") String token) throws Exception {
+    public ResponseEntity<ResponseHTTP> logout (@RequestHeader("Authorization") String token,
+                                                @RequestHeader(name = "request_id") String requestID) throws Exception {
 
         authorizationUserCase.invalidateAccessToken(token);
-        return ResponseEntity.ok().body(new ResponseHTTP("logout com sucesso", LocalDateTime.now(), null));
+
+        String message = "logout com sucesso";
+        logger.atInfo()
+                .setMessage(message)
+                .addKeyValue("token", token)
+                .addKeyValue(REQUEST_ID, requestID)
+                .log();
+
+        return ResponseEntity.ok().body(new ResponseHTTP(message, LocalDateTime.now(), null));
     }
 
     @GetMapping(path = {"/doauth/{access}/", "/doauth/{access}"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> doAuthorization(@RequestHeader("Authorization") String token,
-                                          @PathVariable("access") String access) {
+                                          @PathVariable("access") String access,
+                                             @RequestHeader(name = "request_id") String requestID) {
 
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -113,6 +145,12 @@ public class AuthController {
         authorizationUserCase.doAuthorization(token,
                 new AccessDomain(access));
 
+        logger.atInfo()
+                .setMessage("autorizado com sucesso")
+                .addKeyValue("token", token)
+                .addKeyValue(REQUEST_ID, requestID)
+                .log();
+
         return ResponseEntity.ok().build();
     }
 
@@ -120,10 +158,6 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> crypt(@RequestHeader("Authorization") String token,
                                    @RequestBody String body) {
-
-//        if (!jwtUtils.validateJwtToken(token)) {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
 
         String encrypt = aesEncryptionUtils.encrypt(body);
 
