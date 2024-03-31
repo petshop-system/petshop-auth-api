@@ -62,6 +62,15 @@ redis:
   host: localhost
   port: 6379
   database: 3
+  cache:
+    authentication:
+      cache-name: authentication
+      ttl: 300 # 5 minutos
+      prefix: authentication
+    access-token:
+      cache-name: access_token
+      ttl: 300 # 5 minutos
+      prefix: access_token
 
 ---
 spring:

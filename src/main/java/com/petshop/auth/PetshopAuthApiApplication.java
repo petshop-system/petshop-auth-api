@@ -27,7 +27,7 @@ public class PetshopAuthApiApplication implements CommandLineRunner {
 		app.run();
 	}
 
-	@Bean
+	@Bean("objectMapper")
 	public ObjectMapper objectMapper() {
 		ObjectMapper objectMapper = new ObjectMapper();
 		JavaTimeModule javaTimeModule = new JavaTimeModule();
