@@ -113,18 +113,24 @@ Exemplo de credentials
 ## Referências
 
 * AES
-    * [Encryption and decryption of data at blazing speed using Spring Data JPA](https://medium.com/@deependra.chourasia/encryption-and-decryption-of-data-at-blazing-speed-using-spring-data-jpa-a4c36b84588e);
-    * [Métodos de autenticação e autorização de acesso](https://medium.com/@pedrodev/m%C3%A9todos-de-autentica%C3%A7%C3%A3o-e-autoriza%C3%A7%C3%A3o-de-acesso-f8bd6c58ead0);
-    * [cryptii](https://cryptii.com/pipes/hmac);
+  * [Encryption and decryption of data at blazing speed using Spring Data JPA](https://medium.com/@deependra.chourasia/encryption-and-decryption-of-data-at-blazing-speed-using-spring-data-jpa-a4c36b84588e);
+  * [Online string tools](https://onlinestringtools.com/convert-string-to-bytes);
+  * [Generate Random](https://generate-random.org/encryption-key-generator?count=1&bytes=128&cipher=aes-128-cbc&string=p%26tsh0p-s7st3m&password=);
+  * [cryptii](https://cryptii.com/pipes/hmac);
+
+* Authentication and Authorization
+  * [Métodos de autenticação e autorização de acesso](https://medium.com/@pedrodev/m%C3%A9todos-de-autentica%C3%A7%C3%A3o-e-autoriza%C3%A7%C3%A3o-de-acesso-f8bd6c58ead0);
+
 * JWT
-    * [Tutorial: Create and Verify JWTs in Java](https://developer.okta.com/blog/2018/10/31/jwts-with-java);
-    * [Spring Boot Security and JWT tutorial with example](Spring Boot Security and JWT tutorial with example);
-    * [Supercharge Java Authentication with JSON Web Tokens (JWTs)](https://www.baeldung.com/java-json-web-tokens-jjwt);
+  * [Tutorial: Create and Verify JWTs in Java](https://developer.okta.com/blog/2018/10/31/jwts-with-java);
+  * [Spring Boot Security and JWT tutorial with example](Spring Boot Security and JWT tutorial with example);
+  * [Supercharge Java Authentication with JSON Web Tokens (JWTs)](https://www.baeldung.com/java-json-web-tokens-jjwt);
+
 * MapperStruct
-    * [Using MapStruct with Project Lombok](https://springframework.guru/using-mapstruct-with-project-lombok/);
-    * [mapstruct.org](https://mapstruct.org);
-    * [One-Stop Guide to Mapping with MapStruct](https://reflectoring.io/java-mapping-with-mapstruct/);
-    * [Maximizing Java Code Efficiency and Clarity with MapStruct: A Comprehensive Guide](https://onloadcode.com/maximizing-java-code-efficiency-and-clarity-with-mapstruct-a-comprehensive-guide/);
+  * [Using MapStruct with Project Lombok](https://springframework.guru/using-mapstruct-with-project-lombok/);
+  * [mapstruct.org](https://mapstruct.org);
+  * [One-Stop Guide to Mapping with MapStruct](https://reflectoring.io/java-mapping-with-mapstruct/);
+  * [Maximizing Java Code Efficiency and Clarity with MapStruct: A Comprehensive Guide](https://onloadcode.com/maximizing-java-code-efficiency-and-clarity-with-mapstruct-a-comprehensive-guide/);
   
 
 

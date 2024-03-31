@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class AESProperties {
 
-    private String algorithmic, key;
+    private String algorithmic, key, initialVector;
 
 }
