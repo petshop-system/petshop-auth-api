@@ -2,12 +2,14 @@ package com.petshop.auth.adapter.input.http.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.adapter.input.http.ResponseHTTP;
+import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyDomain;
+import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyService;
 import com.petshop.auth.application.domain.AccessDomain;
 import com.petshop.auth.application.domain.AuthenticationDomain;
-import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.application.port.input.AuthorizationUserCase;
 import com.petshop.auth.utils.AESEncryptionUtils;
 import com.petshop.auth.utils.JWTUtils;
+import com.petshop.auth.utils.converter.AuthenticationConverterMapper;
 import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,7 @@ public class AuthController {
 
     private final String REQUEST_ID = "requestID";
 
-    private final AuthenticationUsercase authenticationUsercase;
+    private final AuthenticationProxyService authenticationProxyService;
 
     private final AuthorizationUserCase authorizationUserCase;
 
@@ -40,16 +42,20 @@ public class AuthController {
 
     private final JWTUtils jwtUtils;
 
-    public AuthController(AuthenticationUsercase authenticationUsercase,
+    private final AuthenticationConverterMapper authenticationConverterMapper;
+
+    public AuthController(@Qualifier("authenticationProxyService") AuthenticationProxyService authenticationProxyService,
                           @Qualifier("authorizationUserCase") AuthorizationUserCase authorizationUserCase,
                           ObjectMapper objectMapper,
                           AESEncryptionUtils aesEncryptionUtils,
-                          @Qualifier("jwtUtils") JWTUtils jwtUtils) {
-        this.authenticationUsercase = authenticationUsercase;
+                          @Qualifier("jwtUtils") JWTUtils jwtUtils,
+                          AuthenticationConverterMapper authenticationConverterMapper) {
+        this.authenticationProxyService = authenticationProxyService;
         this.authorizationUserCase = authorizationUserCase;
         this.objectMapper = objectMapper;
         this.aesEncryptionUtils = aesEncryptionUtils;
         this.jwtUtils = jwtUtils;
+        this.authenticationConverterMapper = authenticationConverterMapper;
     }
 
     @PostMapping(path = {"/signup/", "/signup"})
@@ -58,9 +64,14 @@ public class AuthController {
     public ResponseHTTP save (@RequestBody String body,
                               @RequestHeader(name = "request_id") String requestID) throws Exception {
 
-        AuthenticationRequest authenticationRequest = objectMapper.readValue(aesEncryptionUtils.decrypt(body), AuthenticationRequest.class);
-        AuthenticationDomain authenticationDomain = authenticationRequest.toAuthenticationDomain();
-        authenticationDomain = authenticationUsercase.create(authenticationDomain);
+        AuthenticationRequest authenticationRequest = objectMapper.readValue(aesEncryptionUtils.decrypt(body),
+                AuthenticationRequest.class);
+
+        AuthenticationProxyDomain apd = authenticationConverterMapper
+                .toAuthenticationProxyDomain(authenticationRequest);
+
+        AuthenticationDomain authenticationDomain = authenticationConverterMapper
+                .toAuthenticationDomain(authenticationProxyService.create(apd));
 
         String jws = jwtUtils.generateToken(authenticationDomain.getLogin());
         authorizationUserCase.getNewAccessToken(jws, authenticationDomain);
@@ -84,7 +95,9 @@ public class AuthController {
         String login = (String) loginPassword.get("login");
         String password = (String) loginPassword.get("password");
 
-        AuthenticationDomain authenticationDomain = authenticationUsercase.login(login, password);
+        AuthenticationProxyDomain apd = authenticationProxyService.login(login, password);
+        AuthenticationDomain authenticationDomain = authenticationConverterMapper
+                .toAuthenticationDomain(apd);
         if (ObjectUtils.isEmpty(authenticationDomain)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
@@ -132,9 +145,8 @@ public class AuthController {
         authorizationUserCase.doAuthorization(token,
                 new AccessDomain(access));
 
-        String message = "autorizado com sucesso";
         logger.atInfo()
-                .setMessage(message)
+                .setMessage("autorizado com sucesso")
                 .addKeyValue("token", token)
                 .addKeyValue(REQUEST_ID, requestID)
                 .log();

@@ -29,6 +29,7 @@ encryption:
   aes:
     key: ${ENCRYPTION_AES_KEY} # p&tsh0p-s7st3m
     algorithmic: AES/CBC/PKCS5PADDING
+    initial-vector: ${ENCRYPTION_AES_INIT_VECTOR}
 
 jwt:
   app:
@@ -61,6 +62,15 @@ redis:
   host: localhost
   port: 6379
   database: 3
+  cache:
+    authentication:
+      cache-name: authentication
+      ttl: 300 # 5 minutos
+      prefix: authentication
+    access-token:
+      cache-name: access_token
+      ttl: 300 # 5 minutos
+      prefix: access_token
 
 ---
 spring:

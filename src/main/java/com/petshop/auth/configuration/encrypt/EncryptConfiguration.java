@@ -1,6 +1,7 @@
 package com.petshop.auth.configuration.encrypt;
 
 import com.petshop.auth.utils.AESEncryptionUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,10 +30,11 @@ public class EncryptConfiguration {
         return new AESProperties();
     }
 
-    @Bean
-    IvParameterSpec aesIvParameterSpec() {
-        byte[] iv = new byte[16];
-        new SecureRandom().nextBytes(iv);
+    @Bean("aesIvParameterSpec")
+    IvParameterSpec aesIvParameterSpec(AESProperties aesProperties) {
+        byte[] iv = aesProperties
+                .getInitialVector()
+                .getBytes(StandardCharsets.UTF_8);
         return new IvParameterSpec(iv);
     }
 
@@ -56,7 +58,7 @@ public class EncryptConfiguration {
     }
 
     @Bean
-    AESEncryptionUtils aesEncryptionUtils(IvParameterSpec aesIvParameterSpec,
+    AESEncryptionUtils aesEncryptionUtils(@Qualifier("aesIvParameterSpec") IvParameterSpec aesIvParameterSpec,
                                            SecretKeySpec aesSecretKeySpec,
                                            Cipher aesCipher) {
         return new AESEncryptionUtils(aesIvParameterSpec, aesSecretKeySpec, aesCipher);
