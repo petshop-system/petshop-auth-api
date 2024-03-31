@@ -10,6 +10,6 @@ public interface AuthenticationUsercase {
 
     AuthenticationDomain getByIdUser(Long idUser) throws Exception;;
 
-    AuthenticationDomain login(String login, String password) throws Exception;;
+    AuthenticationDomain login(String login, String password) throws Exception;
 
 }

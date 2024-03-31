@@ -131,7 +131,6 @@ Exemplo de credentials
   * [mapstruct.org](https://mapstruct.org);
   * [One-Stop Guide to Mapping with MapStruct](https://reflectoring.io/java-mapping-with-mapstruct/);
   * [Maximizing Java Code Efficiency and Clarity with MapStruct: A Comprehensive Guide](https://onloadcode.com/maximizing-java-code-efficiency-and-clarity-with-mapstruct-a-comprehensive-guide/);
-  
 
-
-
+* Log estruturado em json
+  * [Structured Logging in Java](https://www.baeldung.com/java-structured-logging); 

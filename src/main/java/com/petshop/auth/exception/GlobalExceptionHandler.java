@@ -2,23 +2,23 @@ package com.petshop.auth.exception;
 
 
 //import io.swagger.v3.oas.annotations.tags.Tag;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
-import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.WebUtils;
-
-import java.util.Map;
 
 @RestControllerAdvice
 //@Tag(name = "GlobalExceptionHandler", description = "Global Exception Handler: management APIs")
 public class GlobalExceptionHandler {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private HttpHeaders defaultHttpHeaders () {
         HttpHeaders headers = new HttpHeaders();
@@ -72,11 +72,21 @@ public class GlobalExceptionHandler {
     }
 
     /** A single place to customize the response body of all Exception types. */
-    protected ResponseEntity<ApiError> handleExceptionInternal(Exception ex, ApiError body, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<ApiError> handleExceptionInternal(Exception ex, ApiError body,
+                                                               HttpHeaders headers, HttpStatus status,
+                                                               WebRequest request) {
         if (HttpStatus.INTERNAL_SERVER_ERROR.equals(status)) {
             request.setAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE, ex, WebRequest.SCOPE_REQUEST);
             return null;
         }
+
+        logger.atError()
+                .setCause(ex)
+                .setMessage(body.getMessage())
+                .addKeyValue("requestID", request.getHeader("request_id"))
+                .addKeyValue("status_code", status.name())
+                .log();
+
         return ResponseEntity.status(status).body(body);
     }
 }

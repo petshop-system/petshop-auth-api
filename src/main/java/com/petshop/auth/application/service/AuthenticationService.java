@@ -1,33 +1,23 @@
 package com.petshop.auth.application.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.application.domain.AuthenticationDomain;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.application.port.output.repository.AuthenticationCacheRepository;
 import com.petshop.auth.application.port.output.repository.AuthenticationDatabaseRepository;
 import com.petshop.auth.exception.UnauthorizedException;
-import com.petshop.auth.utils.AESEncryptionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-
 public class AuthenticationService implements AuthenticationUsercase {
-
-    private final AuthenticationCacheRepository authenticationCacheRepository;
 
     private final AuthenticationDatabaseRepository authenticationDatabaseRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-
-    public AuthenticationService(AuthenticationCacheRepository authenticationCacheRepository,
-                                 AuthenticationDatabaseRepository authenticationDatabaseRepository,
+    public AuthenticationService(AuthenticationDatabaseRepository authenticationDatabaseRepository,
                                  @Qualifier("BCryptPasswordEncoder") PasswordEncoder passwordEncoder) {
-        this.authenticationCacheRepository = authenticationCacheRepository;
         this.authenticationDatabaseRepository = authenticationDatabaseRepository;
         this.passwordEncoder = passwordEncoder;
     }
@@ -43,7 +33,7 @@ public class AuthenticationService implements AuthenticationUsercase {
         String passwordEncoded = passwordEncoder.encode(authenticationDomain.getPassword());
         authenticationDomain.setPassword(passwordEncoded);
         authenticationDomain = this.authenticationDatabaseRepository.save(authenticationDomain);
-        this.authenticationCacheRepository.set(authenticationDomain);
+//        this.authenticationCacheRepository.set(authenticationDomain);
 
         return authenticationDomain;
     }
