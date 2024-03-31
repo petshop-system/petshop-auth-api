@@ -17,11 +17,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class AuthenticationConfiguration {
 
-    @Bean("authenticationConverterMapper")
-    AuthenticationConverterMapper authenticationConverterMapper () {
-        return new AuthenticationConverterMapperImpl();
-    }
-
     @Bean
     AuthenticationDatabaseRepository authenticationDatabaseRepository (AuthenticationJPARepository authenticationJPARepository) {
         return new AuthenticationDatabaseRepository(authenticationJPARepository);
@@ -30,7 +25,7 @@ public class AuthenticationConfiguration {
     @Bean
     AuthenticationCacheRepository authenticationCacheRepository(AuthenticationRedisRepository authenticationRedisRepository,
                                                                 ObjectMapper objectMapper,
-                                                                @Qualifier("authenticationConverterMapper") AuthenticationConverterMapper converterMapper){
+                                                                AuthenticationConverterMapper converterMapper){
         return new com.petshop.auth.adapter.output.repository.cache.authentication.AuthenticationCacheRepository(authenticationRedisRepository,
                 objectMapper, converterMapper);
     }
