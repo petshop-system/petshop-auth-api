@@ -29,6 +29,7 @@ encryption:
   aes:
     key: ${ENCRYPTION_AES_KEY} # p&tsh0p-s7st3m
     algorithmic: AES/CBC/PKCS5PADDING
+    initial-vector: ${ENCRYPTION_AES_INIT_VECTOR}
 
 jwt:
   app:
