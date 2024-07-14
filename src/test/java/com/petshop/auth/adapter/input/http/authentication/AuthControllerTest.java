@@ -4,11 +4,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.PetshopAuthApiApplication;
 import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyService;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
-import com.petshop.auth.configuration.AuthenticationConfiguration;
-import com.petshop.auth.configuration.AuthenticationConfigurationTest;
-import com.petshop.auth.configuration.CacheConfigurationTest;
+import com.petshop.auth.configuration.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -20,10 +20,14 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
-@SpringBootTest(classes = { PetshopAuthApiApplication.class, AuthenticationConfiguration.class,
-        AuthController.class, AuthenticationProxyService.class, AuthenticationUsercase.class,
-        AuthenticationConfigurationTest.class, CacheConfigurationTest.class})
+@EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
+@SpringBootTest(classes = { PetshopAuthApiApplication.class, AuthController.class,
+        AuthenticationConfiguration.class, AuthenticationProxyService.class, AuthenticationUsercase.class,
+        AuthenticationConfigurationTest.class,
+        CacheConfigurationTest.class,
+        AuthorizationConfiguration.class,
+        AccessTokenConfiguration.class, AccessTokenConfigurationTest.class,
+        ProfileAccessConfiguration.class, ProfileAccessConfigurationTest.class})
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 public class AuthControllerTest {

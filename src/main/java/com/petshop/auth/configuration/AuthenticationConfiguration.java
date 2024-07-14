@@ -23,7 +23,7 @@ public class AuthenticationConfiguration {
     public static final String AUTHENTICATION_USERCASE = "authenticationUsercase";
 
     @Bean(AuthenticationConfiguration.AUTHENTICATION_DATABASE_REPOSITORY)
-//    @Profile("!test")
+    @Profile("!test")
     com.petshop.auth.application.port.output.repository.AuthenticationDatabaseRepository authenticationDatabaseRepository (AuthenticationJPARepository authenticationJPARepository) {
         return new AuthenticationDatabaseRepository(authenticationJPARepository);
     }
