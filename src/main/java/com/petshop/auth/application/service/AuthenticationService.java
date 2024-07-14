@@ -1,6 +1,8 @@
 package com.petshop.auth.application.service;
 
+import com.petshop.auth.application.domain.AuthenticationCodeValidationDomain;
 import com.petshop.auth.application.domain.AuthenticationDomain;
+import com.petshop.auth.application.domain.AuthenticationNewCodeValidationDomain;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.application.port.output.repository.AuthenticationCacheRepository;
 import com.petshop.auth.application.port.output.repository.AuthenticationDatabaseRepository;
@@ -9,6 +11,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.Random;
+import java.util.UUID;
 
 public class AuthenticationService implements AuthenticationUsercase {
 
@@ -57,5 +62,25 @@ public class AuthenticationService implements AuthenticationUsercase {
         }
 
         return authenticationDomain;
+    }
+
+    @Override
+    public AuthenticationCodeValidationDomain newCodeValidation(AuthenticationNewCodeValidationDomain newCodeValidationDomain) throws Exception {
+
+        Random random = new Random();
+        StringBuilder code = new StringBuilder();
+        do {
+            code.append(random.nextInt(10));
+        } while (code.length() <= newCodeValidationDomain.getDigits());
+
+        String reference = ObjectUtils.isEmpty(newCodeValidationDomain.getReference())?
+                UUID.randomUUID().toString():newCodeValidationDomain.getReference();
+
+        return new AuthenticationCodeValidationDomain(reference, code.toString());
+    }
+
+    @Override
+    public void validateCodeValidation(AuthenticationCodeValidationDomain codeValidationDomain) throws Exception {
+
     }
 }

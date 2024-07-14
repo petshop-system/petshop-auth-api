@@ -15,10 +15,13 @@ public class RedisProperties {
 
     private Cache cache;
 
-    record Cache (Authentication authentication, AccessToken accessToken) {}
+    record Cache (Authentication authentication, AccessToken accessToken,
+                  AuthenticationCodeValidation authenticationCodeValidation) {}
 
     record Authentication (String cacheName, int ttl, String prefix) {}
 
     record AccessToken (String cacheName, int ttl, String prefix) {}
+
+    record AuthenticationCodeValidation (String cacheName, int ttl, String prefix) {}
 
 }

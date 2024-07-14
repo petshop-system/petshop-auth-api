@@ -1,6 +1,8 @@
 package com.petshop.auth.adapter.input.proxy.authentication;
 
+import com.petshop.auth.application.domain.AuthenticationCodeValidationDomain;
 import com.petshop.auth.application.domain.AuthenticationDomain;
+import com.petshop.auth.application.domain.AuthenticationNewCodeValidationDomain;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.configuration.redis.RedisConfiguration;
 import com.petshop.auth.utils.converter.AuthenticationConverterMapper;
@@ -40,6 +42,27 @@ public class AuthenticationProxyServiceImpl implements AuthenticationProxyServic
         AuthenticationDomain ad = authenticationUsercase.login(login, password);
         return authenticationConverterMapper
                 .toAuthenticationProxyDomain(ad);
+    }
+
+    @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
+            cacheNames = {"authentication_code_validation"},
+            key = "#authentication_code_validation",
+            condition="#authentication_code_validation != null")
+    @Override
+    public AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationNewCodeValidationProxyDomain newCodeValidationProxyDomain) throws Exception {
+
+        AuthenticationNewCodeValidationDomain newCodeValidationDomain =
+                authenticationConverterMapper.toAuthenticationNewCodeValidationDomain(newCodeValidationProxyDomain);
+
+        AuthenticationCodeValidationDomain codeValidationDomain =
+                authenticationUsercase.newCodeValidation(newCodeValidationDomain);
+
+        return authenticationConverterMapper.toAuthenticationCodeValidationProxyDomain(codeValidationDomain);
+    }
+
+    @Override
+    public void validateCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception {
+
     }
 
 }

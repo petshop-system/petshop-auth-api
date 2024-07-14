@@ -2,6 +2,8 @@ package com.petshop.auth.adapter.input.http.authentication;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.adapter.input.http.ResponseHTTP;
+import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationCodeValidationProxyDomain;
+import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationNewCodeValidationProxyDomain;
 import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyDomain;
 import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyService;
 import com.petshop.auth.application.domain.AccessDomain;
@@ -31,6 +33,8 @@ public class AuthController {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final String REQUEST_ID = "requestID";
+
+    private final String Request_ID_Header = "X-Request-Id";
 
     private final AuthenticationProxyService authenticationProxyService;
 
@@ -62,7 +66,7 @@ public class AuthController {
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseHTTP save (@RequestBody String body,
-                              @RequestHeader(name = "request_id") String requestID) throws Exception {
+                              @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
 
         AuthenticationRequest authenticationRequest = objectMapper.readValue(aesEncryptionUtils.decrypt(body),
                 AuthenticationRequest.class);
@@ -89,7 +93,7 @@ public class AuthController {
     @GetMapping(path = {"/signin/", "/signin"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ResponseHTTP> login (@RequestHeader(value = "credentials") String credentials,
-                                               @RequestHeader(name = "request_id") String requestID) throws Exception {
+                                               @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
 
         Map loginPassword = objectMapper.readValue(aesEncryptionUtils.decrypt(credentials), HashMap.class);
         String login = (String) loginPassword.get("login");
@@ -118,7 +122,7 @@ public class AuthController {
     @PostMapping(path = {"/signout/", "/signout"})
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<ResponseHTTP> logout (@RequestHeader("Authorization") String token,
-                                                @RequestHeader(name = "request_id") String requestID) throws Exception {
+                                                @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
 
         authorizationUserCase.invalidateAccessToken(token);
 
@@ -136,7 +140,7 @@ public class AuthController {
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<?> doAuthorization(@RequestHeader("Authorization") String token,
                                           @PathVariable("access") String access,
-                                             @RequestHeader(name = "request_id") String requestID) {
+                                             @RequestHeader(name = Request_ID_Header) String requestID) {
 
         if (!jwtUtils.validateJwtToken(token)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -162,6 +166,31 @@ public class AuthController {
         String encrypt = aesEncryptionUtils.encrypt(body);
 
         return ResponseEntity.ok().body(encrypt);
+    }
+
+    @PostMapping(path = {"/new-code-validation/", "/new-code-validation"})
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseHTTP newCodeValidation (@RequestBody AuthenticationNewCodeValidationRequest body,
+                              @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
+
+        AuthenticationNewCodeValidationProxyDomain newCodeValidationProxyDomain =
+                authenticationConverterMapper.toAuthenticationNewCodeValidationProxyDomain(body);
+
+        AuthenticationCodeValidationProxyDomain codeValidationProxyDomain =
+                authenticationProxyService.newCodeValidation(newCodeValidationProxyDomain);
+
+        AuthenticationCodeValidationResponse codeValidationResponse =
+                authenticationConverterMapper.toAuthenticationCodeValidationResponse(codeValidationProxyDomain);
+
+        String message = "success to create a new code validation.";
+        logger.atInfo()
+                .setMessage(message)
+                .addKeyValue("reference", codeValidationResponse.reference())
+                .addKeyValue(REQUEST_ID, requestID)
+                .log();
+
+        return new ResponseHTTP(message, LocalDateTime.now(), codeValidationResponse);
     }
 
 }
