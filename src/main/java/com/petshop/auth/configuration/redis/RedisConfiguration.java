@@ -7,6 +7,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.data.redis.cache.CacheKeyPrefix;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -23,6 +24,7 @@ import redis.clients.jedis.HostAndPort;
 import java.time.Duration;
 
 @Configuration
+@Profile("!test")
 @EnableCaching
 public class RedisConfiguration {
 

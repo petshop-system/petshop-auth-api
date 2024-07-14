@@ -4,6 +4,8 @@ spring:
   web:
     resources:
       add-mappings: true
+  main:
+    allow-bean-definition-overriding: true
 
 management:
   endpoints:
@@ -123,3 +125,9 @@ spring:
   config:
     activate:
       on-profile: test
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/petshop-system
+    username: petshop-system
+    password: test1234
+    driverClassName: org.postgresql.Driver

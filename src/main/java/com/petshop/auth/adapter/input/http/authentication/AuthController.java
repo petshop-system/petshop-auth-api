@@ -34,7 +34,7 @@ public class AuthController {
 
     private final String REQUEST_ID = "requestID";
 
-    private final String Request_ID_Header = "X-Request-Id";
+    public static final String Request_ID_Header = "X-Request-Id";
 
     private final AuthenticationProxyService authenticationProxyService;
 

@@ -71,7 +71,7 @@ public class AuthenticationService implements AuthenticationUsercase {
         StringBuilder code = new StringBuilder();
         do {
             code.append(random.nextInt(10));
-        } while (code.length() <= newCodeValidationDomain.getDigits());
+        } while (code.length() < newCodeValidationDomain.getDigits());
 
         String reference = ObjectUtils.isEmpty(newCodeValidationDomain.getReference())?
                 UUID.randomUUID().toString():newCodeValidationDomain.getReference();

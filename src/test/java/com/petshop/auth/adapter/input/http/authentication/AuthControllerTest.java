@@ -1,28 +1,35 @@
 package com.petshop.auth.adapter.input.http.authentication;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.petshop.auth.PetshopAuthApiApplication;
+import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyService;
+import com.petshop.auth.application.port.input.AuthenticationUsercase;
+import com.petshop.auth.configuration.AuthenticationConfiguration;
+import com.petshop.auth.configuration.AuthenticationConfigurationTest;
+import com.petshop.auth.configuration.CacheConfigurationTest;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@AutoConfigureMockMvc(printOnlyOnFailure = false)
+
+@SpringBootTest(classes = { PetshopAuthApiApplication.class, AuthenticationConfiguration.class,
+        AuthController.class, AuthenticationProxyService.class, AuthenticationUsercase.class,
+        AuthenticationConfigurationTest.class, CacheConfigurationTest.class})
+@AutoConfigureMockMvc
 @ActiveProfiles("test")
-@WebMvcTest(AuthController.class)
-@EnableWebMvc
-@ExtendWith(SpringExtension.class)
 public class AuthControllerTest {
+
+    // https://www.baeldung.com/spring-beans-integration-test-override
+    // https://stackoverflow.com/questions/53723303/springboot-beandefinitionoverrideexception-invalid-bean-definition
 
     @Autowired
     MockMvc mockMvc;
@@ -43,11 +50,14 @@ public class AuthControllerTest {
         String url = CONTROLLER_PATH + "/new-code-validation/";
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders
                 .post(url)
+                .header(AuthController.Request_ID_Header, "my-request-id")
+                .header("Content-Type", MediaType.APPLICATION_JSON_VALUE)
                 .content(body);
 
         MvcResult result = mockMvc.perform(request)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
     }
 
 }
+
