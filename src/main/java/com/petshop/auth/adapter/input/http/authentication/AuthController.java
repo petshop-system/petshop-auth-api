@@ -9,6 +9,7 @@ import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxySe
 import com.petshop.auth.application.domain.AccessDomain;
 import com.petshop.auth.application.domain.AuthenticationDomain;
 import com.petshop.auth.application.port.input.AuthorizationUserCase;
+import com.petshop.auth.exception.ForbiddenException;
 import com.petshop.auth.utils.AESEncryptionUtils;
 import com.petshop.auth.utils.JWTUtils;
 import com.petshop.auth.utils.converter.AuthenticationConverterMapper;
@@ -177,6 +178,8 @@ public class AuthController {
         AuthenticationNewCodeValidationProxyDomain newCodeValidationProxyDomain =
                 authenticationConverterMapper.toAuthenticationNewCodeValidationProxyDomain(body);
 
+        newCodeValidationProxyDomain.setId(newCodeValidationProxyDomain.getReference());
+
         AuthenticationCodeValidationProxyDomain codeValidationProxyDomain =
                 authenticationProxyService.newCodeValidation(newCodeValidationProxyDomain);
 
@@ -191,6 +194,41 @@ public class AuthController {
                 .log();
 
         return new ResponseHTTP(message, LocalDateTime.now(), codeValidationResponse);
+    }
+
+    @PostMapping(path = {"/validate-code-validation/", "/validate-code-validation"})
+    @ResponseBody
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseHTTP newCodeValidation (@RequestBody AuthenticationCodeValidationRequest body,
+                                           @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
+
+        AuthenticationCodeValidationProxyDomain codeValidationProxyDomain =
+                authenticationConverterMapper.toAuthenticationCodeValidationProxyDomain(body);
+
+        AuthenticationCodeValidationProxyDomain codeValidationProxyDomainCache =
+                authenticationProxyService.newCodeValidation(codeValidationProxyDomain);
+
+        if (ObjectUtils.isEmpty(codeValidationProxyDomainCache)) {
+
+            String message = "code validation not found.";
+            logger.atInfo()
+                    .setMessage(message)
+                    .addKeyValue("reference", codeValidationProxyDomain.getReference())
+                    .addKeyValue(REQUEST_ID, requestID)
+                    .log();
+
+            throw new ForbiddenException(message);
+
+        }
+
+        String message = "success to create a new code validation.";
+        logger.atInfo()
+                .setMessage(message)
+                .addKeyValue("reference", codeValidationProxyDomainCache.getReference())
+                .addKeyValue(REQUEST_ID, requestID)
+                .log();
+
+        return new ResponseHTTP(message, LocalDateTime.now(), codeValidationProxyDomainCache);
     }
 
 }

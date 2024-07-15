@@ -1,5 +1,9 @@
 package com.petshop.auth.configuration.redis;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -17,7 +21,9 @@ import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializationContext;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.ConnectionFactory;
 import redis.clients.jedis.HostAndPort;
 
@@ -70,12 +76,14 @@ public class RedisConfiguration {
                                                            @Qualifier("objectMapper") ObjectMapper objectMapper,
                                                            @Qualifier("jedisConnectionFactory") RedisConnectionFactory connectionFactory) {
 
-        var authenticationCache = this.getRedisCacheConfigurationAuthenticationCache(redisProperties, objectMapper);
+        var authenticationCache = this.getRedisCacheConfiguration(redisProperties.getCache()
+                .authentication().ttl(), objectMapper);
 
-        var accessTokenCache = this.getRedisCacheConfigurationAccessTokenCache(redisProperties, objectMapper);
+        var accessTokenCache = this.getRedisCacheConfiguration(redisProperties.getCache()
+                .accessToken().ttl(), objectMapper);
 
-        var authenticationCodeValidation = this.getRedisCacheConfigurationAuthenticationCodeValidation(redisProperties,
-                objectMapper);
+        var authenticationCodeValidation = this.getRedisCacheConfiguration(redisProperties.getCache()
+                        .authenticationCodeValidation().ttl(), objectMapper);
 
         return RedisCacheManager
                 .RedisCacheManagerBuilder
@@ -86,31 +94,13 @@ public class RedisConfiguration {
                 .build();
     }
 
-    private RedisCacheConfiguration getRedisCacheConfigurationAuthenticationCache (RedisProperties redisProperties,
-                                                                                ObjectMapper objectMapper) {
-        return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(redisProperties.getCache()
-                        .authentication().ttl()))
-                .serializeValuesWith(RedisSerializationContext
-                        .SerializationPair
-                        .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
-    }
+    private RedisCacheConfiguration getRedisCacheConfiguration(int ttl, ObjectMapper objectMapper) {
 
-    private RedisCacheConfiguration getRedisCacheConfigurationAccessTokenCache (RedisProperties redisProperties,
-                                                                                   ObjectMapper objectMapper) {
-        return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(redisProperties.getCache()
-                        .accessToken().ttl()))
-                .serializeValuesWith(RedisSerializationContext
+        return RedisCacheConfiguration.defaultCacheConfig(Thread.currentThread().getContextClassLoader())
+                .entryTtl(Duration.ofSeconds(ttl))
+                .serializeKeysWith(RedisSerializationContext
                         .SerializationPair
-                        .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));
-    }
-
-    private RedisCacheConfiguration getRedisCacheConfigurationAuthenticationCodeValidation (RedisProperties redisProperties,
-                                                                                ObjectMapper objectMapper) {
-        return RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(redisProperties.getCache()
-                        .authenticationCodeValidation().ttl()))
+                        .fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext
                         .SerializationPair
                         .fromSerializer(new GenericJackson2JsonRedisSerializer(objectMapper)));

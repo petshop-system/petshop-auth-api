@@ -1,5 +1,6 @@
 package com.petshop.auth.utils.converter;
 
+import com.petshop.auth.adapter.input.http.authentication.AuthenticationCodeValidationRequest;
 import com.petshop.auth.adapter.input.http.authentication.AuthenticationCodeValidationResponse;
 import com.petshop.auth.adapter.input.http.authentication.AuthenticationNewCodeValidationRequest;
 import com.petshop.auth.adapter.input.http.authentication.AuthenticationRequest;
@@ -27,5 +28,7 @@ public interface AuthenticationConverterMapper {
     AuthenticationNewCodeValidationDomain toAuthenticationNewCodeValidationDomain(AuthenticationNewCodeValidationProxyDomain source);
 
     AuthenticationCodeValidationProxyDomain toAuthenticationCodeValidationProxyDomain(AuthenticationCodeValidationDomain source);
+
+    AuthenticationCodeValidationProxyDomain toAuthenticationCodeValidationProxyDomain(AuthenticationCodeValidationRequest source);
 
 }

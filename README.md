@@ -134,3 +134,7 @@ Exemplo de credentials
 
 * Log estruturado em json
   * [Structured Logging in Java](https://www.baeldung.com/java-structured-logging); 
+
+ENCRYPTION_AES_INIT_VECTOR=0103221020081708;
+ENCRYPTION_AES_KEY=cdkN5yOGxMll8YSqlrwGhQ\=\=;
+JWT_SECRET=f39bfd500d348b2180f25a4df7c2b5b057a4ee73e27b980573b38a5b7b651cc6

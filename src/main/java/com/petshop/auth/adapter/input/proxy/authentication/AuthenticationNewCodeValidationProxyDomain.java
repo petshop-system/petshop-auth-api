@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class AuthenticationNewCodeValidationProxyDomain {
 
+    private String id;
+
     private String reference;
 
     private int digits;

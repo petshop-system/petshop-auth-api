@@ -1,14 +1,13 @@
 package com.petshop.auth.adapter.input.http.authentication;
 
-
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record AuthenticationNewCodeValidationRequest(
+import java.io.Serializable;
 
+public record AuthenticationCodeValidationRequest(
         @JsonProperty("reference") String reference,
 
-        @JsonProperty("digits") int digits
-
-) {
+        @JsonProperty("code") String code
+) implements Serializable {
 
 }

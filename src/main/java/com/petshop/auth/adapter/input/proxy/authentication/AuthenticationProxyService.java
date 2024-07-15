@@ -14,6 +14,10 @@ public interface AuthenticationProxyService {
 
     AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationNewCodeValidationProxyDomain newCodeValidationDomain) throws Exception;
 
-    void validateCodeValidation (AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception;
+    AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception;
+
+//    AuthenticationCodeValidationProxyDomain getCodeValidation (AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception;
+//
+//    AuthenticationCodeValidationProxyDomain validateCodeValidation (String reference) throws Exception;
 
 }

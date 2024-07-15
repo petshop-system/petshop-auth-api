@@ -46,23 +46,36 @@ public class AuthenticationProxyServiceImpl implements AuthenticationProxyServic
 
     @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
             cacheNames = {"authentication_code_validation"},
-            key = "#authentication_code_validation",
-            condition="#authentication_code_validation != null")
+            key = "#newCodeValidationProxyDomain.id")
     @Override
     public AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationNewCodeValidationProxyDomain newCodeValidationProxyDomain) throws Exception {
-
+        // https://howtodoinjava.com/spring-boot/spring-boot-cache-example/
         AuthenticationNewCodeValidationDomain newCodeValidationDomain =
                 authenticationConverterMapper.toAuthenticationNewCodeValidationDomain(newCodeValidationProxyDomain);
 
         AuthenticationCodeValidationDomain codeValidationDomain =
                 authenticationUsercase.newCodeValidation(newCodeValidationDomain);
 
-        return authenticationConverterMapper.toAuthenticationCodeValidationProxyDomain(codeValidationDomain);
+        AuthenticationCodeValidationProxyDomain code = authenticationConverterMapper.toAuthenticationCodeValidationProxyDomain(codeValidationDomain);
+        return code;
     }
 
+    @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
+            cacheNames = {"authentication_code_validation"},
+            key = "#codeValidationDomain.reference")
     @Override
-    public void validateCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception {
-
+    public AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception {
+        return null;
     }
+
+//    @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
+//            cacheNames = {"authentication_code_validation"},
+//            key = "#authentication_code_validation",
+//            condition="#authentication_code_validation != null")
+//    @Override
+//    public AuthenticationCodeValidationProxyDomain getCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception {
+//
+//    }
+
 
 }
