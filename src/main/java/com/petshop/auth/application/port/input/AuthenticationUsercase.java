@@ -16,5 +16,6 @@ public interface AuthenticationUsercase {
 
     AuthenticationCodeValidationDomain newCodeValidation(AuthenticationNewCodeValidationDomain newCodeValidationDomain) throws Exception;
 
-    void validateCodeValidation (AuthenticationCodeValidationDomain codeValidationDomain) throws Exception;
+    void validateCodeValidation (String referenceRequest, String referenceStored,
+                                 String codeRequest, String codeStored) throws Exception;
 }

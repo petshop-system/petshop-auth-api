@@ -6,6 +6,7 @@ import com.petshop.auth.application.domain.AuthenticationNewCodeValidationDomain
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.application.port.output.repository.AuthenticationCacheRepository;
 import com.petshop.auth.application.port.output.repository.AuthenticationDatabaseRepository;
+import com.petshop.auth.exception.ForbiddenException;
 import com.petshop.auth.exception.UnauthorizedException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -80,7 +81,13 @@ public class AuthenticationService implements AuthenticationUsercase {
     }
 
     @Override
-    public void validateCodeValidation(AuthenticationCodeValidationDomain codeValidationDomain) throws Exception {
+    public void validateCodeValidation(String referenceRequest, String referenceStored,
+                                       String codeRequest, String codeStored) throws Exception {
+
+        if (!referenceRequest.equals(referenceStored) ||
+        !codeRequest.equals(codeStored)) {
+            throw new ForbiddenException("wrong code notification");
+        }
 
     }
 }

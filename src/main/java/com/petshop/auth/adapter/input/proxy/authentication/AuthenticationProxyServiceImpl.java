@@ -1,23 +1,35 @@
 package com.petshop.auth.adapter.input.proxy.authentication;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.application.domain.AuthenticationCodeValidationDomain;
 import com.petshop.auth.application.domain.AuthenticationDomain;
 import com.petshop.auth.application.domain.AuthenticationNewCodeValidationDomain;
 import com.petshop.auth.application.port.input.AuthenticationUsercase;
 import com.petshop.auth.configuration.redis.RedisConfiguration;
+import com.petshop.auth.exception.ForbiddenException;
 import com.petshop.auth.utils.converter.AuthenticationConverterMapper;
+import org.apache.commons.lang3.ObjectUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 
 public class AuthenticationProxyServiceImpl implements AuthenticationProxyService {
+
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final AuthenticationUsercase authenticationUsercase;
 
     private final AuthenticationConverterMapper authenticationConverterMapper;
 
+    private final ObjectMapper objectMapper;
+
     public AuthenticationProxyServiceImpl(AuthenticationUsercase authenticationUsercase,
-                                          AuthenticationConverterMapper authenticationConverterMapper) {
+                                          AuthenticationConverterMapper authenticationConverterMapper,
+                                          @Qualifier("objectMapper") ObjectMapper objectMapper) {
         this.authenticationUsercase = authenticationUsercase;
         this.authenticationConverterMapper = authenticationConverterMapper;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -46,36 +58,27 @@ public class AuthenticationProxyServiceImpl implements AuthenticationProxyServic
 
     @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
             cacheNames = {"authentication_code_validation"},
-            key = "#newCodeValidationProxyDomain.id")
+            key = "#reference")
     @Override
-    public AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationNewCodeValidationProxyDomain newCodeValidationProxyDomain) throws Exception {
+    public String getCodeValidation(String reference, int digits) throws Exception {
         // https://howtodoinjava.com/spring-boot/spring-boot-cache-example/
+
         AuthenticationNewCodeValidationDomain newCodeValidationDomain =
-                authenticationConverterMapper.toAuthenticationNewCodeValidationDomain(newCodeValidationProxyDomain);
+                new AuthenticationNewCodeValidationDomain(reference, digits);
 
         AuthenticationCodeValidationDomain codeValidationDomain =
                 authenticationUsercase.newCodeValidation(newCodeValidationDomain);
 
-        AuthenticationCodeValidationProxyDomain code = authenticationConverterMapper.toAuthenticationCodeValidationProxyDomain(codeValidationDomain);
-        return code;
+        return objectMapper.writeValueAsString(codeValidationDomain);
     }
 
-    @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
-            cacheNames = {"authentication_code_validation"},
-            key = "#codeValidationDomain.reference")
     @Override
-    public AuthenticationCodeValidationProxyDomain newCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception {
-        return null;
+    public void validateCodeValidation(String referenceRequest, String referenceStored,
+                                       String codeRequest, String codeStored) throws Exception {
+
+        authenticationUsercase.validateCodeValidation(referenceRequest, referenceStored,
+                codeRequest, codeStored);
+
     }
-
-//    @Cacheable(cacheManager = RedisConfiguration.REDIS_CACHE_MANAGER_BUILDER_CUSTOMIZER,
-//            cacheNames = {"authentication_code_validation"},
-//            key = "#authentication_code_validation",
-//            condition="#authentication_code_validation != null")
-//    @Override
-//    public AuthenticationCodeValidationProxyDomain getCodeValidation(AuthenticationCodeValidationProxyDomain codeValidationDomain) throws Exception {
-//
-//    }
-
 
 }

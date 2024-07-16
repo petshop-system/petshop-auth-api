@@ -1,9 +1,6 @@
 package com.petshop.auth.adapter.input.proxy.authentication;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -11,6 +8,8 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode
+@ToString
 public class AuthenticationCodeValidationProxyDomain implements Serializable {
 
     @Serial

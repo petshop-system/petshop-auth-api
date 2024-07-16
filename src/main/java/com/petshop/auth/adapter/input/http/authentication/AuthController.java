@@ -175,13 +175,9 @@ public class AuthController {
     public ResponseHTTP newCodeValidation (@RequestBody AuthenticationNewCodeValidationRequest body,
                               @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
 
-        AuthenticationNewCodeValidationProxyDomain newCodeValidationProxyDomain =
-                authenticationConverterMapper.toAuthenticationNewCodeValidationProxyDomain(body);
-
-        newCodeValidationProxyDomain.setId(newCodeValidationProxyDomain.getReference());
-
+        String codeJson = authenticationProxyService.getCodeValidation(body.reference(), body.digits());
         AuthenticationCodeValidationProxyDomain codeValidationProxyDomain =
-                authenticationProxyService.newCodeValidation(newCodeValidationProxyDomain);
+                objectMapper.readValue(codeJson, AuthenticationCodeValidationProxyDomain.class);
 
         AuthenticationCodeValidationResponse codeValidationResponse =
                 authenticationConverterMapper.toAuthenticationCodeValidationResponse(codeValidationProxyDomain);
@@ -199,36 +195,28 @@ public class AuthController {
     @PostMapping(path = {"/validate-code-validation/", "/validate-code-validation"})
     @ResponseBody
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseHTTP newCodeValidation (@RequestBody AuthenticationCodeValidationRequest body,
+    public ResponseHTTP validateCodeValidation (@RequestBody AuthenticationCodeValidationRequest body,
                                            @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
 
-        AuthenticationCodeValidationProxyDomain codeValidationProxyDomain =
-                authenticationConverterMapper.toAuthenticationCodeValidationProxyDomain(body);
-
-        AuthenticationCodeValidationProxyDomain codeValidationProxyDomainCache =
-                authenticationProxyService.newCodeValidation(codeValidationProxyDomain);
-
-        if (ObjectUtils.isEmpty(codeValidationProxyDomainCache)) {
-
-            String message = "code validation not found.";
-            logger.atInfo()
-                    .setMessage(message)
-                    .addKeyValue("reference", codeValidationProxyDomain.getReference())
-                    .addKeyValue(REQUEST_ID, requestID)
-                    .log();
-
-            throw new ForbiddenException(message);
-
+        String codeJson = authenticationProxyService.getCodeValidation(body.reference(), 0);
+        if (ObjectUtils.isEmpty(codeJson)) {
+            throw new ForbiddenException("wrong code notification");
         }
 
-        String message = "success to create a new code validation.";
+        AuthenticationCodeValidationProxyDomain codeValidationProxyDomain =
+                objectMapper.readValue(codeJson, AuthenticationCodeValidationProxyDomain.class);
+
+        authenticationProxyService.validateCodeValidation(body.reference(), codeValidationProxyDomain.getReference(),
+                body.code(), codeValidationProxyDomain.getCode());
+
+        String message = "success to validate the code.";
         logger.atInfo()
                 .setMessage(message)
-                .addKeyValue("reference", codeValidationProxyDomainCache.getReference())
+                .addKeyValue("reference", body.reference())
                 .addKeyValue(REQUEST_ID, requestID)
                 .log();
 
-        return new ResponseHTTP(message, LocalDateTime.now(), codeValidationProxyDomainCache);
+        return new ResponseHTTP(message, LocalDateTime.now(), null);
     }
 
 }

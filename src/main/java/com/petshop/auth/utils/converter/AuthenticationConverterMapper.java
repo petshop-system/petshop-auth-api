@@ -31,4 +31,6 @@ public interface AuthenticationConverterMapper {
 
     AuthenticationCodeValidationProxyDomain toAuthenticationCodeValidationProxyDomain(AuthenticationCodeValidationRequest source);
 
+    AuthenticationCodeValidationDomain toAuthenticationCodeValidationDomain(AuthenticationCodeValidationProxyDomain source);
+
 }

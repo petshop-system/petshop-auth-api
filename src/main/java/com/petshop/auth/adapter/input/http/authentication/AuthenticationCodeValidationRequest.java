@@ -8,6 +8,7 @@ public record AuthenticationCodeValidationRequest(
         @JsonProperty("reference") String reference,
 
         @JsonProperty("code") String code
+
 ) implements Serializable {
 
 }

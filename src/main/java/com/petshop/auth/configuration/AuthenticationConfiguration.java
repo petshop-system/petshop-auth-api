@@ -1,5 +1,6 @@
 package com.petshop.auth.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyService;
 import com.petshop.auth.adapter.input.proxy.authentication.AuthenticationProxyServiceImpl;
 import com.petshop.auth.adapter.output.repository.database.authentication.AuthenticationDatabaseRepository;
@@ -38,8 +39,9 @@ public class AuthenticationConfiguration {
 
     @Bean(AuthenticationConfiguration.AUTHENTICATION_PROXY_SERVICE)
     AuthenticationProxyService authenticationProxyService (AuthenticationUsercase authenticationUsercase,
-                                                           AuthenticationConverterMapper authenticationConverterMapper) {
-        return new AuthenticationProxyServiceImpl(authenticationUsercase, authenticationConverterMapper);
+                                                           AuthenticationConverterMapper authenticationConverterMapper,
+                                                           @Qualifier("objectMapper") ObjectMapper objectMapper) {
+        return new AuthenticationProxyServiceImpl(authenticationUsercase, authenticationConverterMapper, objectMapper);
     }
 
 }
