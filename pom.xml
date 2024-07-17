@@ -16,7 +16,6 @@
 	<properties>
 		<java.version>17</java.version>
 		<org.mapstruct.version>1.5.5.Final</org.mapstruct.version>
-<!--		<io.undertow.version>2.3.14.Final</io.undertow.version>-->
 	</properties>
 	<dependencies>
 		<dependency>
@@ -46,42 +45,13 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
-<!--			<exclusions>-->
-<!--				<exclusion>-->
-<!--					<groupId>org.springframework.boot</groupId>-->
-<!--					<artifactId>spring-boot-starter-tomcat</artifactId>-->
-<!--				</exclusion>-->
-<!--			</exclusions>-->
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-undertow</artifactId>-->
-<!--		</dependency>-->
-		<!-- https://mvnrepository.com/artifact/io.undertow/undertow-core -->
-<!--		<dependency>-->
-<!--			<groupId>io.undertow</groupId>-->
-<!--			<artifactId>undertow-core</artifactId>-->
-<!--			<version>${io.undertow.version}</version>-->
-<!--		</dependency>-->
-
-		<!-- https://mvnrepository.com/artifact/io.undertow/undertow-servlet -->
-<!--		<dependency>-->
-<!--			<groupId>io.undertow</groupId>-->
-<!--			<artifactId>undertow-servlet</artifactId>-->
-<!--			<version>${io.undertow.version}</version>-->
-<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webflux</artifactId>
 		</dependency>
 
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-devtools</artifactId>-->
-<!--			<scope>runtime</scope>-->
-<!--			<optional>true</optional>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-docker-compose</artifactId>
