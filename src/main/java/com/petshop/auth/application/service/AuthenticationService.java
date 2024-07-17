@@ -88,6 +88,5 @@ public class AuthenticationService implements AuthenticationUsercase {
         !codeRequest.equals(codeStored)) {
             throw new ForbiddenException("wrong code notification");
         }
-
     }
 }

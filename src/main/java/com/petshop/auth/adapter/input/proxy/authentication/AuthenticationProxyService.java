@@ -15,7 +15,7 @@ public interface AuthenticationProxyService {
 
     String getCodeValidation(String reference, int digits) throws Exception;
 
-    void validateCodeValidation(String referenceRequest, String referenceStored,
+    Void validateCodeValidation(String referenceRequest, String referenceStored,
                                 String codeRequest, String codeStored) throws Exception;
 
 }

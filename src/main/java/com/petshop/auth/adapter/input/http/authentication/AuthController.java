@@ -194,7 +194,7 @@ public class AuthController {
 
     @PostMapping(path = {"/validate-code-validation/", "/validate-code-validation"})
     @ResponseBody
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public ResponseHTTP validateCodeValidation (@RequestBody AuthenticationCodeValidationRequest body,
                                            @RequestHeader(name = Request_ID_Header) String requestID) throws Exception {
 

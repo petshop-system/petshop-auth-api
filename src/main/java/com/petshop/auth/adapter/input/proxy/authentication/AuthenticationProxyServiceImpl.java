@@ -73,12 +73,13 @@ public class AuthenticationProxyServiceImpl implements AuthenticationProxyServic
     }
 
     @Override
-    public void validateCodeValidation(String referenceRequest, String referenceStored,
+    public Void validateCodeValidation(String referenceRequest, String referenceStored,
                                        String codeRequest, String codeStored) throws Exception {
 
         authenticationUsercase.validateCodeValidation(referenceRequest, referenceStored,
                 codeRequest, codeStored);
 
+        return null;
     }
 
 }
