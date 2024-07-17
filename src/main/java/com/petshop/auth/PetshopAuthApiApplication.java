@@ -23,7 +23,6 @@ public class PetshopAuthApiApplication implements CommandLineRunner {
 	private String activeProfile;
 
 	public static void main(String[] args) {
-		System.setProperty("spring.devtools.restart.enabled", "false");
 		SpringApplication app = new SpringApplication(PetshopAuthApiApplication.class);
 		app.run();
 	}
