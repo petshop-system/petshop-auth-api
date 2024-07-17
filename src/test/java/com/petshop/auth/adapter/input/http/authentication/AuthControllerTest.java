@@ -47,7 +47,7 @@ public class AuthControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    @MockBean//(name = AuthenticationConfiguration.AUTHENTICATION_PROXY_SERVICE)
+    @MockBean
     private AuthenticationProxyService authenticationProxyServiceMock;
 
     final String CONTROLLER_PATH = "/auth";
