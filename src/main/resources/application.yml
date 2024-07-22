@@ -4,6 +4,11 @@ spring:
   web:
     resources:
       add-mappings: true
+  main:
+    allow-bean-definition-overriding: true
+  devtools:
+    restart:
+      enabled: false
 
 management:
   endpoints:
@@ -35,6 +40,23 @@ jwt:
   app:
     jwt-secret: ${JWT_SECRET}
     jwt-expiration-ms: 1800 # 30 minutos
+
+#redis:
+#  port: 6379
+#  database: 3
+#  cache:
+#    authentication:
+#      cache-name: authentication
+#      ttl: 300 # 5 minutos
+#      prefix: authentication
+#    access-token:
+#      cache-name: access_token
+#      ttl: 300 # 5 minutos
+#      prefix: access_token
+#    authentication-code-validation:
+#      cache-name: authentication_code_validation
+#      ttl: 300 # 5 minutos
+#      prefix: authentication_code_validation
 
 ---
 spring:
@@ -71,6 +93,10 @@ redis:
       cache-name: access_token
       ttl: 300 # 5 minutos
       prefix: access_token
+    authentication-code-validation:
+      cache-name: authentication_code_validation
+      ttl: 300 # 5 minutos
+      prefix: '#authentication_code_validation'
 
 ---
 spring:
@@ -98,3 +124,22 @@ redis:
   host: redis
   port: 6379
   database: 3
+  cache:
+    authentication:
+      cache-name: authentication
+      ttl: 300 # 5 minutos
+      prefix: authentication
+    access-token:
+      cache-name: access_token
+      ttl: 300 # 5 minutos
+      prefix: access_token
+    authentication-code-validation:
+      cache-name: authentication_code_validation
+      ttl: 300 # 5 minutos
+      prefix: '#authentication_code_validation'
+
+---
+spring:
+  config:
+    activate:
+      on-profile: test
