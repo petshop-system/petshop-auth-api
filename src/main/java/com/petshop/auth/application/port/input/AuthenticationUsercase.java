@@ -1,5 +1,7 @@
 package com.petshop.auth.application.port.input;
 
+import com.petshop.auth.application.domain.AuthenticationCodeValidationDomain;
+import com.petshop.auth.application.domain.AuthenticationNewCodeValidationDomain;
 import com.petshop.auth.application.domain.AuthenticationDomain;
 
 public interface AuthenticationUsercase {
@@ -12,4 +14,8 @@ public interface AuthenticationUsercase {
 
     AuthenticationDomain login(String login, String password) throws Exception;
 
+    AuthenticationCodeValidationDomain newCodeValidation(AuthenticationNewCodeValidationDomain newCodeValidationDomain) throws Exception;
+
+    void validateCodeValidation (String referenceRequest, String referenceStored,
+                                 String codeRequest, String codeStored) throws Exception;
 }
